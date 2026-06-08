@@ -1,0 +1,22 @@
+command:
+  compact:
+    empty: There are no items to compact.
+    only-player: Only players can run this command.
+    success: Compacted all available items.
+  config:
+    invalid-item-id: 'Unknown item ID: {0}'
+    invalid-tag-id: 'Unknown item tag ID: {0}'
+    no-edit-permission: You do not have permission to edit configuration values.
+    no-view-permission: You do not have permission to view configuration values.
+    set: Changed {0} to {1} and saved the configuration.
+    unset: unset
+    view: '{0}: {1}'
+  reload:
+    success: CompactResources configuration has been reloaded.
+log:
+  config:
+    blank-regex-pattern: Skipping a regex rule with an empty pattern.
+    invalid-regex-pattern: 'Skipping an invalid regex rule: {0}'
+    unknown-item-id: 'Unknown item ID is kept in the configuration: {0}'
+  stack-size:
+    invalid-tag-id: 'Skipping an invalid item tag ID: {0}'

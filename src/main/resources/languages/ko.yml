@@ -1,0 +1,22 @@
+command:
+  compact:
+    empty: 압축할 수 있는 아이템이 없습니다.
+    only-player: 이 명령어는 플레이어만 실행할 수 있습니다.
+    success: 압축 가능한 아이템을 압축했습니다.
+  config:
+    invalid-item-id: '존재하지 않는 아이템 ID입니다: {0}'
+    invalid-tag-id: '존재하지 않는 아이템 태그 ID입니다: {0}'
+    no-edit-permission: 설정을 수정할 권한이 없습니다.
+    no-view-permission: 설정을 볼 권한이 없습니다.
+    set: '{0} 값을 {1}(으)로 변경하고 설정을 저장했습니다.'
+    unset: 설정되지 않음
+    view: '{0}: {1}'
+  reload:
+    success: CompactResources 설정을 새로고침했습니다.
+log:
+  config:
+    blank-regex-pattern: pattern이 비어 있는 정규식 규칙을 건너뜁니다.
+    invalid-regex-pattern: '잘못된 정규식 규칙을 건너뜁니다: {0}'
+    unknown-item-id: '알 수 없는 아이템 ID를 설정에 유지합니다: {0}'
+  stack-size:
+    invalid-tag-id: '잘못된 아이템 태그 ID를 건너뜁니다: {0}'

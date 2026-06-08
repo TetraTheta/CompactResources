@@ -1,0 +1,30 @@
+language: 'ko'
+
+items:
+  # The default max stack size applied to all items unless a more specific rule exists.
+  # WARNING: Enabling this is risky as it applies to items with durability, causing the entire stack to share damage.
+  default:
+    enabled: false
+    max-stack-size: 64
+  # Max stack sizes by Minecraft item ID.
+  # The 'minecraft:' namespace can be omitted (e.g., 'suspicious_stew': 64).
+  ids:
+    'beetroot_soup': 64
+    'lingering_potion': 64
+    'mushroom_stew': 64
+    'potion': 64
+    'rabbit_stew': 64
+    'saddle': 64
+    'splash_potion': 64
+    'suspicious_stew': 64
+  # Max stack sizes by Minecraft item tag ID.
+  # The 'minecraft:' namespace can be omitted (e.g., 'boats': 64).
+  tags:
+    'boats': 64
+    'chest_boats': 64
+  # Regular expression rules matched against Minecraft item IDs.
+  # Patterns are matched against the full runtime item ID (e.g., 'minecraft:<id>').
+  # Example: '^.*minecart$' matches all minecart items.
+  regex:
+    - pattern: '^.*minecart$'
+      max-stack-size: 64
