@@ -1,5 +1,5 @@
 <div style="text-align: center">
-<img src="https://raw.githubusercontent.com/TetraTheta/CompactResources/main/.etc/compactresources_icon.png" style="width: 100%" alt="CompactResources Logo">
+<img src="https://raw.githubusercontent.com/TetraTheta/CompactResources/main/.etc/compactresources_icon.png" alt="CompactResources Logo">
 </div>
 
 # CompactResources
