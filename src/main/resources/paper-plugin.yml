@@ -8,11 +8,8 @@ permissions:
   compactresources.compact:
     description: Allow compacting items in the player's inventory
     default: true
-  compactresources.config.view:
-    description: View CompactResources configuration values
-    default: true
-  compactresources.config.edit:
-    description: Edit CompactResources configuration values
+  compactresources.config:
+    description: View and edit CompactResources configuration values
     default: op
   compactresources.reload:
     description: Reload CompactResources configuration from the disk

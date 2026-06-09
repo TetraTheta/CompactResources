@@ -13,7 +13,7 @@ import org.bukkit.event.inventory.*;
 import org.bukkit.inventory.Inventory;
 
 /// Reapplies configured stack-size metadata after Bukkit inventory and item events mutate items.
-public class CREventListener implements Listener {
+public class CREventMaxStack implements Listener {
   private final Consumer<Runnable> nextTickScheduler;
   private final StackSizeService stackSizeService;
 
@@ -21,7 +21,7 @@ public class CREventListener implements Listener {
   ///
   /// @param stackSizeService service used to apply configured stack sizes
   /// @param nextTickScheduler runtime-owned scheduler for delayed metadata updates
-  public CREventListener(StackSizeService stackSizeService, Consumer<Runnable> nextTickScheduler) {
+  public CREventMaxStack(StackSizeService stackSizeService, Consumer<Runnable> nextTickScheduler) {
     this.nextTickScheduler = nextTickScheduler;
     this.stackSizeService = stackSizeService;
   }
@@ -31,7 +31,7 @@ public class CREventListener implements Listener {
   /// @param e block dispense event
   @EventHandler(priority = EventPriority.LOWEST)
   public void onBlockDispense(BlockDispenseEvent e) {
-    nextTickScheduler.accept(() -> stackSizeService.applyCustomStackSize(e.getItem()));
+    nextTickScheduler.accept(() -> applyCustomStackSize(e.getItem()));
   }
 
   /// Reapplies stack-size metadata after an entity picks up an item.
@@ -39,8 +39,7 @@ public class CREventListener implements Listener {
   /// @param e entity pickup event
   @EventHandler(priority = EventPriority.LOWEST)
   public void onEntityPickup(EntityPickupItemEvent e) {
-    nextTickScheduler.accept(
-        () -> stackSizeService.applyCustomStackSize(e.getItem().getItemStack()));
+    nextTickScheduler.accept(() -> applyCustomStackSize(e.getItem().getItemStack()));
   }
 
   /// Reapplies stack-size metadata after a furnace creates a smelt result.
@@ -48,7 +47,7 @@ public class CREventListener implements Listener {
   /// @param e furnace smelt event
   @EventHandler(priority = EventPriority.LOWEST)
   public void onFurnaceSmelt(FurnaceSmeltEvent e) {
-    nextTickScheduler.accept(() -> stackSizeService.applyCustomStackSize(e.getResult()));
+    nextTickScheduler.accept(() -> applyCustomStackSize(e.getResult()));
   }
 
   /// Reapplies stack-size metadata after a player inventory click updates cursor and slot state.
@@ -58,8 +57,8 @@ public class CREventListener implements Listener {
   public void onInventoryClick(InventoryClickEvent e) {
     nextTickScheduler.accept(
         () -> {
-          stackSizeService.applyCustomStackSize(e.getCurrentItem());
-          stackSizeService.applyCustomStackSize(e.getCursor());
+          applyCustomStackSize(e.getCurrentItem());
+          applyCustomStackSize(e.getCursor());
           fixInventory(e.getWhoClicked().getInventory());
         });
   }
@@ -71,8 +70,8 @@ public class CREventListener implements Listener {
   public void onInventoryCreative(InventoryCreativeEvent e) {
     nextTickScheduler.accept(
         () -> {
-          stackSizeService.applyCustomStackSize(e.getCurrentItem());
-          stackSizeService.applyCustomStackSize(e.getCursor());
+          applyCustomStackSize(e.getCurrentItem());
+          applyCustomStackSize(e.getCursor());
           fixInventory(e.getWhoClicked().getInventory());
         });
   }
@@ -82,7 +81,7 @@ public class CREventListener implements Listener {
   /// @param e inventory move event
   @EventHandler(priority = EventPriority.LOWEST)
   public void onInventoryMove(InventoryMoveItemEvent e) {
-    nextTickScheduler.accept(() -> stackSizeService.applyCustomStackSize(e.getItem()));
+    nextTickScheduler.accept(() -> applyCustomStackSize(e.getItem()));
   }
 
   /// Reapplies stack-size metadata after an inventory picks up a dropped item entity.
@@ -90,8 +89,7 @@ public class CREventListener implements Listener {
   /// @param e inventory pickup event
   @EventHandler(priority = EventPriority.LOWEST)
   public void onInventoryPickupItem(InventoryPickupItemEvent e) {
-    nextTickScheduler.accept(
-        () -> stackSizeService.applyCustomStackSize(e.getItem().getItemStack()));
+    nextTickScheduler.accept(() -> applyCustomStackSize(e.getItem().getItemStack()));
   }
 
   /// Reapplies stack-size metadata after a new dropped item entity spawns.
@@ -99,8 +97,7 @@ public class CREventListener implements Listener {
   /// @param e item spawn event
   @EventHandler(priority = EventPriority.LOWEST)
   public void onItemSpawn(ItemSpawnEvent e) {
-    nextTickScheduler.accept(
-        () -> stackSizeService.applyCustomStackSize(e.getEntity().getItemStack()));
+    nextTickScheduler.accept(() -> applyCustomStackSize(e.getEntity().getItemStack()));
   }
 
   /// Reapplies stack-size metadata after a crafter produces a result.
@@ -108,7 +105,7 @@ public class CREventListener implements Listener {
   /// @param e crafter craft event
   @EventHandler(priority = EventPriority.LOWEST)
   public void onPrepareCrafter(CrafterCraftEvent e) {
-    nextTickScheduler.accept(() -> stackSizeService.applyCustomStackSize(e.getResult()));
+    nextTickScheduler.accept(() -> applyCustomStackSize(e.getResult()));
   }
 
   /// Reapplies stack-size metadata to every item in an inventory.
@@ -116,6 +113,15 @@ public class CREventListener implements Listener {
   /// @param inventory inventory to fix
   private void fixInventory(Inventory inventory) {
     if (inventory == null) return;
-    stackSizeService.applyCustomStackSize(inventory.getContents());
+    for (var item : inventory.getContents()) {
+      applyCustomStackSize(item);
+    }
+  }
+
+  /// Applies stack-size metadata unless the item is a compressed block.
+  ///
+  /// @param item item to update
+  private void applyCustomStackSize(org.bukkit.inventory.ItemStack item) {
+    stackSizeService.applyCustomStackSize(item);
   }
 }

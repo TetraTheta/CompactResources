@@ -25,8 +25,7 @@ import org.bukkit.inventory.ItemType;
 
 /// Builds and executes the '/cr config' subcommand tree.
 public class ConfigCommand implements CRSubCommand {
-  private static final String PERMISSION_CONFIG_EDIT = "compactresources.config.edit";
-  private static final String PERMISSION_CONFIG_VIEW = "compactresources.config.view";
+  private static final String PERMISSION_CONFIG = "compactresources.config";
 
   private final CompactResources plugin;
 
@@ -43,12 +42,9 @@ public class ConfigCommand implements CRSubCommand {
   @Override
   public LiteralArgumentBuilder<CommandSourceStack> getCommand() {
     return Commands.literal("config")
-        .requires(
-            ctx ->
-                ctx.getSender().hasPermission(PERMISSION_CONFIG_VIEW)
-                    || ctx.getSender().hasPermission(PERMISSION_CONFIG_EDIT))
+        .requires(ctx -> ctx.getSender().hasPermission(PERMISSION_CONFIG))
         .then(getLanguageConfigCommand())
-        .then(getItemsConfigCommand());
+        .then(getMaxStackSizeConfigCommand());
   }
 
   /// Builds the language configuration command tree.
@@ -72,43 +68,49 @@ public class ConfigCommand implements CRSubCommand {
   /// Builds the live item configuration command tree.
   ///
   /// @return item config subcommand tree
-  private LiteralArgumentBuilder<CommandSourceStack> getItemsConfigCommand() {
+  private LiteralArgumentBuilder<CommandSourceStack> getMaxStackSizeConfigCommand() {
     LiteralArgumentBuilder<CommandSourceStack> enable =
-        Commands.literal("enable")
+        Commands.literal("enabled")
             .executes(
-                ctx -> viewConfig(ctx, "items.default.enabled", getConfig().isDefaultRuleEnabled()))
+                ctx ->
+                    viewConfig(
+                        ctx,
+                        "module.max-stack-size.default.enabled",
+                        getConfig().isDefaultRuleEnabled()))
             .then(
                 Commands.argument("value", BoolArgumentType.bool())
                     .executes(
                         ctx ->
                             setConfig(
                                 ctx,
-                                "items.default.enabled",
+                                "module.max-stack-size.default.enabled",
                                 BoolArgumentType.getBool(ctx, "value"),
                                 config ->
                                     config.setDefaultRuleEnabled(
                                         BoolArgumentType.getBool(ctx, "value")))));
 
     LiteralArgumentBuilder<CommandSourceStack> maxStackSize =
-        Commands.literal("max-stack-size")
+        Commands.literal("size")
             .executes(
                 ctx ->
                     viewConfig(
-                        ctx, "items.default.max-stack-size", getConfig().getDefaultMaxStackSize()))
+                        ctx,
+                        "module.max-stack-size.default.size",
+                        getConfig().getDefaultMaxStackSize()))
             .then(
                 Commands.argument("value", IntegerArgumentType.integer(1, 99))
                     .executes(
                         ctx ->
                             setConfig(
                                 ctx,
-                                "items.default.max-stack-size",
+                                "module.max-stack-size.default.size",
                                 IntegerArgumentType.getInteger(ctx, "value"),
                                 config ->
                                     config.setDefaultMaxStackSize(
                                         IntegerArgumentType.getInteger(ctx, "value")))));
 
     LiteralArgumentBuilder<CommandSourceStack> ids =
-        Commands.literal("ids")
+        Commands.literal("id")
             .then(
                 Commands.argument("minecraft_item_id", ArgumentTypes.resourceKey(RegistryKey.ITEM))
                     .executes(this::viewItemRule)
@@ -117,7 +119,7 @@ public class ConfigCommand implements CRSubCommand {
                             .executes(this::setItemRule)));
 
     LiteralArgumentBuilder<CommandSourceStack> tags =
-        Commands.literal("tags")
+        Commands.literal("tag")
             .then(
                 Commands.argument("minecraft_tag_id", ArgumentTypes.namespacedKey())
                     .executes(this::viewTagRule)
@@ -127,7 +129,7 @@ public class ConfigCommand implements CRSubCommand {
 
     LiteralArgumentBuilder<CommandSourceStack> defaultConfig =
         Commands.literal("default").then(enable).then(maxStackSize);
-    return Commands.literal("items").then(defaultConfig).then(ids).then(tags);
+    return Commands.literal("max-stack-size").then(defaultConfig).then(ids).then(tags);
   }
 
   /// Returns the active configuration facade for the command execution.
@@ -146,8 +148,8 @@ public class ConfigCommand implements CRSubCommand {
   @SuppressWarnings("SameReturnValue")
   private int viewConfig(CommandContext<CommandSourceStack> ctx, String path, Object value) {
     CommandSender sender = ctx.getSource().getSender();
-    if (!sender.hasPermission(PERMISSION_CONFIG_VIEW)) {
-      plugin.getRuntime().getMessageService().send(sender, "command.config.no-view-permission");
+    if (!sender.hasPermission(PERMISSION_CONFIG)) {
+      plugin.getRuntime().getMessageService().send(sender, "command.config.no-permission");
       return Command.SINGLE_SUCCESS;
     }
 
@@ -170,8 +172,8 @@ public class ConfigCommand implements CRSubCommand {
   private int setConfig(
       CommandContext<CommandSourceStack> ctx, String path, Object value, ConfigWriter writer) {
     CommandSender sender = ctx.getSource().getSender();
-    if (!sender.hasPermission(PERMISSION_CONFIG_EDIT)) {
-      plugin.getRuntime().getMessageService().send(sender, "command.config.no-edit-permission");
+    if (!sender.hasPermission(PERMISSION_CONFIG)) {
+      plugin.getRuntime().getMessageService().send(sender, "command.config.no-permission");
       return Command.SINGLE_SUCCESS;
     }
 
@@ -191,7 +193,9 @@ public class ConfigCommand implements CRSubCommand {
     String itemId = getItemId(ctx);
     CRConfig config = getConfig();
     return viewConfig(
-        ctx, "items.ids." + config.normalizeConfiguredId(itemId), config.getItemStackSize(itemId));
+        ctx,
+        "module.max-stack-size.id." + config.normalizeConfiguredId(itemId),
+        config.getItemStackSize(itemId));
   }
 
   /// Updates an item ID stack-size rule.
@@ -209,7 +213,7 @@ public class ConfigCommand implements CRSubCommand {
     }
 
     int value = IntegerArgumentType.getInteger(ctx, "value");
-    String path = "items.ids." + getConfig().normalizeConfiguredId(itemId);
+    String path = "module.max-stack-size.id." + getConfig().normalizeConfiguredId(itemId);
     return setConfig(ctx, path, value, config -> config.setItemStackSize(itemId, value));
   }
 
@@ -221,7 +225,9 @@ public class ConfigCommand implements CRSubCommand {
     String tagId = getTagId(ctx);
     CRConfig config = getConfig();
     return viewConfig(
-        ctx, "items.tags." + config.normalizeConfiguredId(tagId), config.getTagStackSize(tagId));
+        ctx,
+        "module.max-stack-size.tag." + config.normalizeConfiguredId(tagId),
+        config.getTagStackSize(tagId));
   }
 
   /// Updates an item tag stack-size rule.
@@ -239,7 +245,7 @@ public class ConfigCommand implements CRSubCommand {
     }
 
     int value = IntegerArgumentType.getInteger(ctx, "value");
-    String path = "items.tags." + getConfig().normalizeConfiguredId(tagId);
+    String path = "module.max-stack-size.tag." + getConfig().normalizeConfiguredId(tagId);
     return setConfig(ctx, path, value, config -> config.setTagStackSize(tagId, value));
   }
 

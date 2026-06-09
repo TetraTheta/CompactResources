@@ -6,8 +6,7 @@ command:
   config:
     invalid-item-id: 'Unknown item ID: {0}'
     invalid-tag-id: 'Unknown item tag ID: {0}'
-    no-edit-permission: You do not have permission to edit configuration values.
-    no-view-permission: You do not have permission to view configuration values.
+    no-permission: You do not have permission to view or edit configuration values.
     set: Changed {0} to {1} and saved the configuration.
     unset: unset
     view: '{0}: {1}'
@@ -17,6 +16,11 @@ log:
   config:
     blank-regex-pattern: Skipping a regex rule with an empty pattern.
     invalid-regex-pattern: 'Skipping an invalid regex rule: {0}'
+    invalid-resource-pack-uuid: 'Resetting an invalid resource pack UUID to the default: {0}'
     unknown-item-id: 'Unknown item ID is kept in the configuration: {0}'
+  resource-pack:
+    invalid-config: 'Skipping resource pack delivery because the configuration is invalid: {0}'
   stack-size:
     invalid-tag-id: 'Skipping an invalid item tag ID: {0}'
+resource-pack:
+  prompt: CompactResources applies a resource pack for compressed block models.
