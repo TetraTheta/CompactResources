@@ -1,5 +1,4 @@
 language: 'ko'
-
 module:
   compression:
     enabled: true
@@ -20,21 +19,20 @@ module:
       'saddle': 64
       'splash_potion': 64
       'suspicious_stew': 64
-    # Max stack sizes by Minecraft item tag ID.
-    # The 'minecraft:' namespace can be omitted (e.g., 'boats': 64).
-    tag:
-      'boats': 64
-      'chest_boats': 64
     # Regular expression rules matched against Minecraft item IDs.
     # Patterns are matched against the full runtime item ID (e.g., 'minecraft:<id>').
     # Example: '^.*minecart$' matches all minecart items.
     regex:
       - pattern: '^.*minecart$'
         size: 64
-
+    # Max stack sizes by Minecraft item tag ID.
+    # The 'minecraft:' namespace can be omitted (e.g., 'boats': 64).
+    tag:
+      'boats': 64
+      'chest_boats': 64
 resource-pack:
   enabled: true
   force: true
-  url: 'https://cdn.modrinth.com/data/swhJ0PPM/versions/J3THwgBq/compact-resources-pack.zip'
   sha1: 'd0f79788181b267dc16016e2f99b980551d0df42'
+  url: 'https://cdn.modrinth.com/data/swhJ0PPM/versions/J3THwgBq/compact-resources-pack.zip'
   uuid: '9d54b89a-1738-4307-abd8-3f7f9d8613f5'

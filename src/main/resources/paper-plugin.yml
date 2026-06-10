@@ -1,16 +1,16 @@
-main: io.github.tetratheta.compactresources.CompactResources
 api-version: '${api_version}'
+authors: ['TetraTheta']
 load: POSTWORLD
+main: io.github.tetratheta.compactresources.CompactResources
 name: CompactResources
-authors: [ 'TetraTheta' ]
 version: '${version}'
 permissions:
   compactresources.compact:
-    description: Allow compacting items in the player's inventory
     default: true
+    description: Allow compacting items in the player's inventory
   compactresources.config:
+    default: op
     description: View and edit CompactResources configuration values
-    default: op
   compactresources.reload:
-    description: Reload CompactResources configuration from the disk
     default: op
+    description: Reload CompactResources configuration from the disk
