@@ -1,9 +1,9 @@
-<div style="text-align: center">
+<p align="center">
 <img src="https://raw.githubusercontent.com/TetraTheta/CompactResources/main/.etc/compactresources_icon.png" alt="CompactResources Logo">
-</div>
+</p>
 
 # CompactResources
-**CompactResources makes low-stack resources easier to carry on Paper servers**
+**CompactResources adds stack-size rules and compressed resource blocks to Paper servers**
 
 ![Version](https://img.shields.io/modrinth/v/compactresources?style=for-the-badge&label=Plugin%20Version) 
 ![Game Version](https://img.shields.io/modrinth/game-versions/compactresources?style=for-the-badge&label=Minecraft%20Version)  
@@ -11,13 +11,19 @@
 
 ## Introduction
 
-CompactResources helps players keep their inventories clean by increasing the maximum stack size of configured items and compacting reversible resource recipes directly from their inventory.
+CompactResources helps players keep their inventories clean by increasing the maximum stack size of configured items and by adding reversible compressed resource blocks.
+
+Compressed blocks are custom `minecraft:heart_of_the_sea` items. For them to display correctly, clients need [CompactResourcesPack](https://modrinth.com/resourcepack/compactresourcespack), the companion resource pack developed primarily for this plugin. The plugin can send that pack automatically through Paper's server resource-pack system when `resource-pack.url` and `resource-pack.sha1` are configured.
 
 By default, the plugin targets items that are commonly useful but awkward to store in bulk, such as stews, potions, saddles, boats, chest boats, and minecarts. Server owners can customize stack-size rules by item ID, Minecraft item tag, regular expression, or a disabled-by-default fallback rule for every item.
 
-Players can run `/cr compact` to convert eligible items into their compacted form when the server has a matching 2x2 or 3x3 recipe and a recipe that can turn the result back into the original items. For example, compatible resources can be compacted without permanently losing their decompacting path.
+Players can craft supported blocks into x9, x81, and x729 compressed tiers, decompress them back through crafting, or run `/cr compact` to convert eligible inventory contents automatically.
 
 Use `/cr reload` after editing the configuration to apply changes without restarting the server.
+
+Related projects:
+
+- CompactResourcesPack resource pack: <https://modrinth.com/resourcepack/compactresourcespack>
 
 ## Configuration
 
@@ -28,25 +34,47 @@ module:
   compression:
     enabled: true
   max-stack-size:
+    # The default max stack size applied to all items unless a more specific rule exists.
+    # WARNING: Enabling this is risky as it applies to items with durability, causing the entire stack to share damage.
     default:
       enabled: false
       size: 64
+    # Max stack sizes by Minecraft item ID.
+    # The 'minecraft:' namespace can be omitted (e.g., 'suspicious_stew': 64).
     id:
-      potion: 64
-      saddle: 64
-    tag:
-      boats: 64
+      'beetroot_soup': 64
+      'lingering_potion': 64
+      'mushroom_stew': 64
+      'potion': 64
+      'rabbit_stew': 64
+      'saddle': 64
+      'splash_potion': 64
+      'suspicious_stew': 64
+    # Regular expression rules matched against Minecraft item IDs.
+    # Patterns are matched against the full runtime item ID (e.g., 'minecraft:<id>').
+    # Example: '^.*minecart$' matches all minecart items.
     regex:
       - pattern: '^.*minecart$'
         size: 64
+    # Max stack sizes by Minecraft item tag ID.
+    # The 'minecraft:' namespace can be omitted (e.g., 'boats': 64).
+    tag:
+      'boats': 64
+      'chest_boats': 64
 
 resource-pack:
   enabled: true
   force: true
-  url: ''
-  sha1: ''
+  sha1: 'd0f79788181b267dc16016e2f99b980551d0df42'
+  url: 'https://cdn.modrinth.com/data/swhJ0PPM/versions/J3THwgBq/compact-resources-pack.zip'
   uuid: '9d54b89a-1738-4307-abd8-3f7f9d8613f5'
 ```
+
+`module.compression.enabled` controls compressed block recipes and item handling. If it is disabled, the stack-size module can still run, but compressed resource blocks are not registered.
+
+`module.max-stack-size` rules are resolved in this order: exact item ID, item tag, regex, then the optional default rule. Values are clamped to the supported range `1..99`. Invalid regex rules are removed during validation, while unknown item IDs are kept with a warning so future Minecraft versions can still use them.
+
+`resource-pack.enabled` controls whether the plugin asks joining players to load the configured pack. `resource-pack.force` makes the request required. If `url` or `sha1` is blank, or if the URL/hash metadata is invalid, resource-pack delivery is skipped and compressed blocks will still work mechanically but appear as Heart of the Sea items on clients without CompactResourcesPack.
 
 ## Commands
 
@@ -64,7 +92,7 @@ Compressed blocks are custom `minecraft:heart_of_the_sea` items. CompactResource
 
 Item names are Adventure translatable components. A compressed cobblestone item is named as `block.minecraft.cobblestone` plus ` x9`, so each client sees the block name in its own language.
 
-The resource pack overrides the Heart of the Sea item definition and dispatches by Custom Model Data string. Server owners can host the ZIP on Modrinth CDN and configure `resource-pack.url` plus `resource-pack.sha1`; Paper then sends it to clients on join.
+[CompactResourcesPack](https://modrinth.com/resourcepack/compactresourcespack) overrides the Heart of the Sea item definition and dispatches by Custom Model Data string. Server owners can host the ZIP on Modrinth CDN and configure `resource-pack.url` plus `resource-pack.sha1`; Paper then sends it to clients on join.
 
 Permissions:
 
