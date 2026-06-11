@@ -33,6 +33,6 @@ module:
 resource-pack:
   enabled: true
   force: true
-  sha1: 'd0f79788181b267dc16016e2f99b980551d0df42'
-  url: 'https://cdn.modrinth.com/data/swhJ0PPM/versions/J3THwgBq/compact-resources-pack.zip'
+  sha1: '34465d867fff230b649080315e466e1d2cfd72d8'
+  url: 'https://cdn.modrinth.com/data/swhJ0PPM/versions/y5qpQDLi/compact-resources-pack.zip'
   uuid: '9d54b89a-1738-4307-abd8-3f7f9d8613f5'

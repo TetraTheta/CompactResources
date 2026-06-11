@@ -65,8 +65,8 @@ module:
 resource-pack:
   enabled: true
   force: true
-  sha1: 'd0f79788181b267dc16016e2f99b980551d0df42'
-  url: 'https://cdn.modrinth.com/data/swhJ0PPM/versions/J3THwgBq/compact-resources-pack.zip'
+  sha1: '34465d867fff230b649080315e466e1d2cfd72d8'
+  url: 'https://cdn.modrinth.com/data/swhJ0PPM/versions/y5qpQDLi/compact-resources-pack.zip'
   uuid: '9d54b89a-1738-4307-abd8-3f7f9d8613f5'
 ```
 
@@ -88,11 +88,13 @@ resource-pack:
 
 ## Technical Notes
 
-Compressed blocks are custom `minecraft:heart_of_the_sea` items. CompactResources stores the base material and compression tier in the item's Persistent Data Container, then assigns a Custom Model Data string such as `compactresources:cobblestone/x9`.
+Compressed blocks are custom `minecraft:heart_of_the_sea` items. CompactResources stores the base material and compression tier in the item's Persistent Data Container, then assigns an item model such as `compactresources:item/compressed/cobblestone_x9`.
 
 Item names are Adventure translatable components. A compressed cobblestone item is named as `block.minecraft.cobblestone` plus ` x9`, so each client sees the block name in its own language.
 
-[CompactResourcesPack](https://modrinth.com/resourcepack/compactresourcespack) overrides the Heart of the Sea item definition and dispatches by Custom Model Data string. Server owners can host the ZIP on Modrinth CDN and configure `resource-pack.url` plus `resource-pack.sha1`; Paper then sends it to clients on join.
+[CompactResourcesPack](https://modrinth.com/resourcepack/compactresourcespack) provides item model definitions for compressed blocks. Server owners can use the URL of the resource pack on Modrinth CDN and configure `resource-pack.url` plus `resource-pack.sha1`; Paper then sends it to clients on join.
+
+During the item model migration, CompactResources upgrades older compressed block items that still carry legacy Custom Model Data metadata when players join or move those items.
 
 Permissions:
 

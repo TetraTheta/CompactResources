@@ -1,6 +1,7 @@
 package io.github.tetratheta.compactresources;
 
 import io.github.tetratheta.compactresources.config.CRConfig;
+import io.github.tetratheta.compactresources.listener.CREventCompressedBlockMigration;
 import io.github.tetratheta.compactresources.listener.CREventCompression;
 import io.github.tetratheta.compactresources.listener.CREventMaxStack;
 import io.github.tetratheta.compactresources.listener.CREventRecipeDiscovery;
@@ -39,6 +40,7 @@ public class CompactResourcesRuntime extends PluginRuntime {
     registerListener(new CREventMaxStack(stackSizeService, this::runTask));
     registerListener(new CREventResourcePack(resourcePackService, this::runTask));
     if (compressedBlockService != null) {
+      registerListener(new CREventCompressedBlockMigration(plugin, this::runTask));
       registerListener(new CREventCompression(compressedBlockService));
       registerListener(new CREventRecipeDiscovery(compressedBlockService, this::runTask));
     }

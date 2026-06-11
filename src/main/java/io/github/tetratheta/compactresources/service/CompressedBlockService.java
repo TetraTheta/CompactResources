@@ -11,13 +11,13 @@ import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemRarity;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.ShapelessRecipe;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.inventory.meta.components.CustomModelDataComponent;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -93,10 +93,8 @@ public class CompressedBlockService {
     meta.getPersistentDataContainer().set(levelKey, PersistentDataType.STRING, level.id());
     meta.itemName(
         Component.translatable(material.translationKey()).append(Component.text(" " + level.id())));
-
-    CustomModelDataComponent component = meta.getCustomModelDataComponent();
-    component.setStrings(List.of(getCustomModelDataString(material, level)));
-    meta.setCustomModelDataComponent(component);
+    meta.setRarity(ItemRarity.COMMON);
+    meta.setItemModel(getItemModelKey(material, level));
     item.setItemMeta(meta);
     return item;
   }
@@ -134,13 +132,13 @@ public class CompressedBlockService {
   /// @param item item to inspect
   /// @param material expected compressed material
   /// @param level expected compression level
-  /// @return true when material, Custom Model Data, and PDC values match
+  /// @return true when material and PDC values match
   public boolean hasCompressedIdentity(
       ItemStack item, CompressedMaterial material, CompressionLevel level) {
     if (item == null || item.getType() != Material.HEART_OF_THE_SEA) return false;
 
     ItemMeta meta = item.getItemMeta();
-    if (meta == null || !hasCustomModelData(meta, material, level)) return false;
+    if (meta == null) return false;
 
     String materialId =
         meta.getPersistentDataContainer().get(materialKey, PersistentDataType.STRING);
@@ -357,17 +355,8 @@ public class CompressedBlockService {
         : createItem(block.material(), previous, 9);
   }
 
-  /// Returns whether the custom model data string exactly identifies a compressed block.
-  private boolean hasCustomModelData(
-      ItemMeta meta, CompressedMaterial material, CompressionLevel level) {
-    if (!meta.hasCustomModelDataComponent()) return false;
-
-    CustomModelDataComponent component = meta.getCustomModelDataComponent();
-    return component.getStrings().equals(List.of(getCustomModelDataString(material, level)));
-  }
-
-  /// Returns the resource-pack model selector string for one compressed block.
-  private String getCustomModelDataString(CompressedMaterial material, CompressionLevel level) {
-    return "compactresources:" + material.id() + "/" + level.id();
+  /// Returns the resource-pack item model key for one compressed block.
+  private NamespacedKey getItemModelKey(CompressedMaterial material, CompressionLevel level) {
+    return new NamespacedKey(plugin, "item/compressed/" + material.id() + "_" + level.id());
   }
 }
