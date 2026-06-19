@@ -55,7 +55,7 @@ public class CRConfig extends BaseConfig {
 
   /// Returns whether the compression module is enabled.
   ///
-  /// @return true when custom compressed blocks should be registered
+  /// @return true when custom compression recipes and items should be registered
   public boolean isCompressionEnabled() {
     return getConfig().getBoolean(PATH_COMPRESSION_ENABLED, true);
   }

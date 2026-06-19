@@ -1,7 +1,7 @@
 package io.github.tetratheta.compactresources.compression;
 
-/// Stores decoded compressed block identity.
+/// Stores decoded compressed resource identity.
 ///
 /// @param material compressed base material
 /// @param level compression level
-public record CompressedBlock(CompressedMaterial material, CompressionLevel level) {}
+public record CompressedResource(CompressedMaterial material, CompressionLevel level) {}

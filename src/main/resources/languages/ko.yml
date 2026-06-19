@@ -23,4 +23,4 @@ log:
   stack-size:
     invalid-tag-id: '잘못된 아이템 태그 ID를 건너뜁니다: {0}'
 resource-pack:
-  prompt: CompactResources 압축 블록 표시를 위해 리소스팩을 적용합니다.
+  prompt: CompactResources 압축 자원 표시를 위해 리소스팩을 적용합니다.

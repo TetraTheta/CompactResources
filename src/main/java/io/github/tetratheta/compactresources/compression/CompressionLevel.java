@@ -1,6 +1,6 @@
 package io.github.tetratheta.compactresources.compression;
 
-/// Represents one supported compressed block tier.
+/// Represents one supported compression tier.
 public enum CompressionLevel {
   X9("x9", 9),
   X81("x81", 81),
@@ -10,7 +10,7 @@ public enum CompressionLevel {
   private final int multiplier;
 
   /// @param id stable configuration and PDC identifier
-  /// @param multiplier amount of base blocks represented by one item
+  /// @param multiplier amount of base materials represented by one item
   CompressionLevel(String id, int multiplier) {
     this.id = id;
     this.multiplier = multiplier;
@@ -34,9 +34,9 @@ public enum CompressionLevel {
     return id;
   }
 
-  /// Returns how many base blocks one item represents.
+  /// Returns how many base materials one item represents.
   ///
-  /// @return base block multiplier
+  /// @return base material multiplier
   public int multiplier() {
     return multiplier;
   }
@@ -54,7 +54,7 @@ public enum CompressionLevel {
 
   /// Returns the next lower compression level.
   ///
-  /// @return previous level, or null when this level decompresses to the base block
+  /// @return previous level, or null when this level decompresses to the base material
   public CompressionLevel previous() {
     return switch (this) {
       case X9 -> null;

@@ -1,7 +1,7 @@
 package io.github.tetratheta.compactresources.service;
 
-import io.github.tetratheta.compactresources.compression.CompressedBlock;
 import io.github.tetratheta.compactresources.compression.CompressedMaterial;
+import io.github.tetratheta.compactresources.compression.CompressedResource;
 import io.github.tetratheta.compactresources.compression.CompressionLevel;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -21,8 +21,8 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 
-/// Creates, identifies, recipes, and inventory compaction behavior for compressed blocks.
-public class CompressedBlockService {
+/// Creates, identifies, recipes, and inventory compaction behavior for compressed resource items.
+public class CompressionService {
   private static final String KEY_MATERIAL = "compressed_material";
   private static final String KEY_LEVEL = "compression_level";
 
@@ -32,11 +32,11 @@ public class CompressedBlockService {
   private final NamespacedKey levelKey;
   private final List<NamespacedKey> recipeKeys;
 
-  /// Creates a compressed block service bound to one plugin runtime.
+  /// Creates a compression service bound to one plugin runtime.
   ///
   /// @param plugin plugin used for keys and recipe registration
   /// @param stackSizeService service used when new items need custom stack-size metadata
-  public CompressedBlockService(JavaPlugin plugin, StackSizeService stackSizeService) {
+  public CompressionService(JavaPlugin plugin, StackSizeService stackSizeService) {
     this.plugin = plugin;
     this.stackSizeService = stackSizeService;
     materialKey = new NamespacedKey(plugin, KEY_MATERIAL);
@@ -50,9 +50,9 @@ public class CompressedBlockService {
     for (CompressedMaterial material : CompressedMaterial.values()) {
       registerBaseCompressionRecipe(material);
     }
-    registerCompressedBlockCompressionRecipe();
-    registerCompressedBlockDecompressionRecipe();
-    plugin.getLogger().info("Registered " + recipeKeys.size() + " compressed block recipes.");
+    registerCompressedResourceCompressionRecipe();
+    registerCompressedResourceDecompressionRecipe();
+    plugin.getLogger().info("Registered " + recipeKeys.size() + " compression recipes.");
   }
 
   /// Removes all recipes registered by this runtime.
@@ -78,12 +78,12 @@ public class CompressedBlockService {
     return List.copyOf(recipeKeys);
   }
 
-  /// Creates one compressed block item.
+  /// Creates one compressed resource item.
   ///
   /// @param material compressed base material
   /// @param level compression level
   /// @param amount stack amount
-  /// @return compressed block item stack
+  /// @return compressed resource item stack
   public ItemStack createItem(CompressedMaterial material, CompressionLevel level, int amount) {
     ItemStack item = new ItemStack(Material.HEART_OF_THE_SEA, amount);
     ItemMeta meta = item.getItemMeta();
@@ -99,19 +99,19 @@ public class CompressedBlockService {
     return item;
   }
 
-  /// Returns whether an item is one of this plugin's compressed blocks.
+  /// Returns whether an item is one of this plugin's compressed resources.
   ///
   /// @param item item to inspect
-  /// @return true when the item has valid compressed block metadata
-  public boolean isCompressedBlock(ItemStack item) {
+  /// @return true when the item has valid compressed resource metadata
+  public boolean isCompressedResource(ItemStack item) {
     return decode(item) != null;
   }
 
-  /// Decodes a compressed block item.
+  /// Decodes a compressed resource item.
   ///
   /// @param item item to inspect
-  /// @return decoded compressed block, or null when the item is not valid
-  public CompressedBlock decode(ItemStack item) {
+  /// @return decoded compressed resource, or null when the item is not valid
+  public CompressedResource decode(ItemStack item) {
     if (item == null || item.getType() != Material.HEART_OF_THE_SEA) return null;
 
     ItemMeta meta = item.getItemMeta();
@@ -124,10 +124,10 @@ public class CompressedBlockService {
 
     CompressedMaterial material = CompressedMaterial.fromId(materialId);
     CompressionLevel level = CompressionLevel.fromId(levelId);
-    return material == null || level == null ? null : new CompressedBlock(material, level);
+    return material == null || level == null ? null : new CompressedResource(material, level);
   }
 
-  /// Returns whether an item has exactly the compressed block identity used by recipes.
+  /// Returns whether an item has exactly the compressed resource identity used by recipes.
   ///
   /// @param item item to inspect
   /// @param material expected compressed material
@@ -157,10 +157,10 @@ public class CompressedBlockService {
       return decompressionResult;
     }
 
-    ItemStack compressedBlockResult = createCompressedBlockCompressionResult(matrix);
-    if (compressedBlockResult != null) {
-      stackSizeService.applyCustomStackSize(compressedBlockResult);
-      return compressedBlockResult;
+    ItemStack compressedResourceResult = createCompressedResourceCompressionResult(matrix);
+    if (compressedResourceResult != null) {
+      stackSizeService.applyCustomStackSize(compressedResourceResult);
+      return compressedResourceResult;
     }
 
     ItemStack baseCompressionResult = createBaseCompressionResult(matrix);
@@ -168,7 +168,7 @@ public class CompressedBlockService {
     return baseCompressionResult;
   }
 
-  /// Compacts supported base blocks and lower compressed tiers inside a player inventory.
+  /// Compacts supported base materials and lower compressed tiers inside a player inventory.
   ///
   /// @param player player whose inventory should be compacted
   /// @return true when at least one conversion happened
@@ -192,9 +192,9 @@ public class CompressedBlockService {
     addRecipe(key, recipe);
   }
 
-  /// Registers the broad 3x3 Heart of the Sea recipe for compressed-block tier upgrades.
-  private void registerCompressedBlockCompressionRecipe() {
-    NamespacedKey key = new NamespacedKey(plugin, "compress_compressed_block");
+  /// Registers the broad 3x3 Heart of the Sea recipe for compressed resource tier upgrades.
+  private void registerCompressedResourceCompressionRecipe() {
+    NamespacedKey key = new NamespacedKey(plugin, "compress_resource");
     ShapedRecipe recipe =
         new ShapedRecipe(key, createItem(CompressedMaterial.DIRT, CompressionLevel.X81, 1));
     recipe.shape("AAA", "AAA", "AAA");
@@ -202,9 +202,9 @@ public class CompressedBlockService {
     addRecipe(key, recipe);
   }
 
-  /// Registers the broad single Heart of the Sea recipe for compressed-block decompression.
-  private void registerCompressedBlockDecompressionRecipe() {
-    NamespacedKey key = new NamespacedKey(plugin, "decompress_compressed_block");
+  /// Registers the broad single Heart of the Sea recipe for compressed resource decompression.
+  private void registerCompressedResourceDecompressionRecipe() {
+    NamespacedKey key = new NamespacedKey(plugin, "decompress_resource");
     ShapelessRecipe recipe =
         new ShapelessRecipe(key, createItem(CompressedMaterial.DIRT, CompressionLevel.X9, 9));
     recipe.addIngredient(Material.HEART_OF_THE_SEA);
@@ -217,7 +217,7 @@ public class CompressedBlockService {
     if (plugin.getServer().addRecipe(recipe)) {
       recipeKeys.add(key);
     } else {
-      plugin.getLogger().warning("Failed to register compressed block recipe: " + key);
+      plugin.getLogger().warning("Failed to register compression recipe: " + key);
     }
   }
 
@@ -277,12 +277,13 @@ public class CompressedBlockService {
   private boolean matchesInput(
       ItemStack item, CompressedMaterial material, CompressionLevel level) {
     if (item == null || item.getType() == Material.AIR) return false;
-    if (level == null) return item.getType() == material.baseMaterial() && !isCompressedBlock(item);
+    if (level == null)
+      return item.getType() == material.baseMaterial() && !isCompressedResource(item);
 
     return hasCompressedIdentity(item, material, level);
   }
 
-  /// Creates a compression result from nine identical base blocks.
+  /// Creates a compression result from nine identical base materials.
   private ItemStack createBaseCompressionResult(ItemStack[] matrix) {
     int filledSlots = 0;
     CompressedMaterial firstMaterial = null;
@@ -291,7 +292,7 @@ public class CompressedBlockService {
       if (item == null || item.getType() == Material.AIR) continue;
       filledSlots++;
       CompressedMaterial material = CompressedMaterial.fromMaterial(item.getType());
-      if (material == null || isCompressedBlock(item)) return null;
+      if (material == null || isCompressedResource(item)) return null;
 
       if (firstMaterial == null) {
         firstMaterial = material;
@@ -305,57 +306,57 @@ public class CompressedBlockService {
         : null;
   }
 
-  /// Creates a compression result from nine identical compressed blocks.
-  private ItemStack createCompressedBlockCompressionResult(ItemStack[] matrix) {
+  /// Creates a compression result from nine identical compressed resource items.
+  private ItemStack createCompressedResourceCompressionResult(ItemStack[] matrix) {
     int filledSlots = 0;
-    CompressedBlock firstBlock = null;
+    CompressedResource firstResource = null;
 
     for (ItemStack item : matrix) {
       if (item == null || item.getType() == Material.AIR) continue;
       filledSlots++;
 
-      CompressedBlock block = decode(item);
-      if (block == null || block.level().next() == null) return null;
-      if (!hasCompressedIdentity(item, block.material(), block.level())) return null;
+      CompressedResource resource = decode(item);
+      if (resource == null || resource.level().next() == null) return null;
+      if (!hasCompressedIdentity(item, resource.material(), resource.level())) return null;
 
-      if (firstBlock == null) {
-        firstBlock = block;
-      } else if (!firstBlock.equals(block)) {
+      if (firstResource == null) {
+        firstResource = resource;
+      } else if (!firstResource.equals(resource)) {
         return null;
       }
     }
 
-    return filledSlots == 9 && firstBlock != null
-        ? createItem(firstBlock.material(), firstBlock.level().next(), 1)
+    return filledSlots == 9 && firstResource != null
+        ? createItem(firstResource.material(), firstResource.level().next(), 1)
         : null;
   }
 
-  /// Creates a decompression result from one compressed block in any crafting grid.
+  /// Creates a decompression result from one compressed resource item in any crafting grid.
   private ItemStack createDecompressionResult(ItemStack[] matrix) {
     int filledSlots = 0;
-    CompressedBlock block = null;
+    CompressedResource resource = null;
 
     for (ItemStack item : matrix) {
       if (item == null || item.getType() == Material.AIR) continue;
       filledSlots++;
 
-      block = decode(item);
-      if (block == null || !hasCompressedIdentity(item, block.material(), block.level()))
+      resource = decode(item);
+      if (resource == null || !hasCompressedIdentity(item, resource.material(), resource.level()))
         return null;
     }
 
-    return filledSlots == 1 && block != null ? createDecompressionResult(block) : null;
+    return filledSlots == 1 && resource != null ? createDecompressionResult(resource) : null;
   }
 
-  /// Creates the output stack for one compressed block decompression.
-  private ItemStack createDecompressionResult(CompressedBlock block) {
-    CompressionLevel previous = block.level().previous();
+  /// Creates the output stack for one compressed resource decompression.
+  private ItemStack createDecompressionResult(CompressedResource resource) {
+    CompressionLevel previous = resource.level().previous();
     return previous == null
-        ? new ItemStack(block.material().baseMaterial(), 9)
-        : createItem(block.material(), previous, 9);
+        ? new ItemStack(resource.material().baseMaterial(), 9)
+        : createItem(resource.material(), previous, 9);
   }
 
-  /// Returns the resource-pack item model key for one compressed block.
+  /// Returns the resource-pack item model key for one compressed resource item.
   private NamespacedKey getItemModelKey(CompressedMaterial material, CompressionLevel level) {
     return new NamespacedKey(plugin, "item/compressed/" + material.id() + "_" + level.id());
   }

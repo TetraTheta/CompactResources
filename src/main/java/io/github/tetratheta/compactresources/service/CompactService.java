@@ -17,7 +17,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 /// Finds reversible compacting recipes and applies them to player inventories.
 public class CompactService {
   private final JavaPlugin plugin;
-  private final CompressedBlockService compressedBlockService;
+  private final CompressionService compressionService;
   private final StackSizeService stackSizeService;
 
   /// Creates a compacting service backed by the server recipe registry.
@@ -25,12 +25,10 @@ public class CompactService {
   /// @param plugin plugin instance used to access the server
   /// @param stackSizeService service used to compare and update custom stack sizes
   public CompactService(
-      JavaPlugin plugin,
-      StackSizeService stackSizeService,
-      CompressedBlockService compressedBlockService) {
+      JavaPlugin plugin, StackSizeService stackSizeService, CompressionService compressionService) {
     this.plugin = plugin;
     this.stackSizeService = stackSizeService;
-    this.compressedBlockService = compressedBlockService;
+    this.compressionService = compressionService;
   }
 
   /// Compacts every eligible item group in a player's storage inventory.
@@ -38,8 +36,7 @@ public class CompactService {
   /// @param player player whose inventory should be compacted
   /// @return true when at least one item group was compacted
   public boolean compactInventory(Player player) {
-    boolean compacted =
-        compressedBlockService != null && compressedBlockService.compactInventory(player);
+    boolean compacted = compressionService != null && compressionService.compactInventory(player);
     List<ItemStack> candidates = new ArrayList<>();
     List<Recipe> recipes = getRecipes();
 
@@ -52,8 +49,7 @@ public class CompactService {
     for (ItemStack candidate : candidates) {
       if (compactItem(player, candidate, recipes)) compacted = true;
     }
-    if (compressedBlockService != null && compressedBlockService.compactInventory(player))
-      compacted = true;
+    if (compressionService != null && compressionService.compactInventory(player)) compacted = true;
     return compacted;
   }
 

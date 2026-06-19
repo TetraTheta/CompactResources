@@ -118,7 +118,7 @@ public class CREventMaxStack implements Listener {
     }
   }
 
-  /// Applies stack-size metadata unless the item is a compressed block.
+  /// Applies stack-size metadata unless the item is a compressed resource.
   ///
   /// @param item item to update
   private void applyCustomStackSize(org.bukkit.inventory.ItemStack item) {

@@ -23,4 +23,4 @@ log:
   stack-size:
     invalid-tag-id: 'Skipping an invalid item tag ID: {0}'
 resource-pack:
-  prompt: CompactResources applies a resource pack for compressed block models.
+  prompt: CompactResources applies a resource pack for compressed resource models.

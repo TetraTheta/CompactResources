@@ -3,21 +3,23 @@
 </p>
 
 # CompactResources
-**CompactResources adds stack-size rules and compressed resource blocks to Paper servers**
+**CompactResources adds stack-size rules and compressed resource items to Paper servers**
 
 ![Version](https://img.shields.io/modrinth/v/compactresources?style=for-the-badge&label=Plugin%20Version) 
-![Game Version](https://img.shields.io/modrinth/game-versions/compactresources?style=for-the-badge&label=Minecraft%20Version)  
+![Game Version](https://img.shields.io/modrinth/game-versions/compactresources?style=for-the-badge&label=Minecraft%20Version)<br>
 [![Modrinth Downloads](https://img.shields.io/modrinth/dt/compactresources?style=for-the-badge&label=Modrinth%20Downloads)](https://modrinth.com/plugin/compactresources)
+
+[![Discord](https://img.shields.io/discord/1514516278226845726?style=for-the-badge)](https://discord.gg/eS8tCEkecp)
 
 ## Introduction
 
-CompactResources helps players keep their inventories clean by increasing the maximum stack size of configured items and by adding reversible compressed resource blocks.
+CompactResources helps players keep their inventories clean by increasing the maximum stack size of configured items and by adding reversible compressed resource items.
 
-Compressed blocks are custom `minecraft:heart_of_the_sea` items. For them to display correctly, clients need [CompactResourcesPack](https://modrinth.com/resourcepack/compactresourcespack), the companion resource pack developed primarily for this plugin. The plugin can send that pack automatically through Paper's server resource-pack system when `resource-pack.url` and `resource-pack.sha1` are configured.
+Compressed resources are custom `minecraft:heart_of_the_sea` items that can visually appear as block-shaped models through the resource pack. For them to display correctly, clients need [CompactResourcesPack](https://modrinth.com/resourcepack/compactresourcespack), the companion resource pack developed primarily for this plugin. The plugin can send that pack automatically through Paper's server resource-pack system when `resource-pack.url` and `resource-pack.sha1` are configured.
 
 By default, the plugin targets items that are commonly useful but awkward to store in bulk, such as stews, potions, saddles, boats, chest boats, and minecarts. Server owners can customize stack-size rules by item ID, Minecraft item tag, regular expression, or a disabled-by-default fallback rule for every item.
 
-Players can craft supported blocks into x9, x81, and x729 compressed tiers, decompress them back through crafting, or run `/cr compact` to convert eligible inventory contents automatically.
+Players can craft supported materials into x9, x81, and x729 compressed tiers, decompress them back through crafting, or run `/cr compact` to convert eligible inventory contents automatically.
 
 Use `/cr reload` after editing the configuration to apply changes without restarting the server.
 
@@ -70,11 +72,11 @@ resource-pack:
   uuid: '9d54b89a-1738-4307-abd8-3f7f9d8613f5'
 ```
 
-`module.compression.enabled` controls compressed block recipes and item handling. If it is disabled, the stack-size module can still run, but compressed resource blocks are not registered.
+`module.compression.enabled` controls compression recipes and item handling. If it is disabled, the stack-size module can still run, but compressed resource items are not registered.
 
 `module.max-stack-size` rules are resolved in this order: exact item ID, item tag, regex, then the optional default rule. Values are clamped to the supported range `1..99`. Invalid regex rules are removed during validation, while unknown item IDs are kept with a warning so future Minecraft versions can still use them.
 
-`resource-pack.enabled` controls whether the plugin asks joining players to load the configured pack. `resource-pack.force` makes the request required. If `url` or `sha1` is blank, or if the URL/hash metadata is invalid, resource-pack delivery is skipped and compressed blocks will still work mechanically but appear as Heart of the Sea items on clients without CompactResourcesPack.
+`resource-pack.enabled` controls whether the plugin asks joining players to load the configured pack. `resource-pack.force` makes the request required. If `url` or `sha1` is blank, or if the URL/hash metadata is invalid, resource-pack delivery is skipped and compressed resources will still work mechanically but appear as Heart of the Sea items on clients without CompactResourcesPack.
 
 ## Commands
 
@@ -88,13 +90,13 @@ resource-pack:
 
 ## Technical Notes
 
-Compressed blocks are custom `minecraft:heart_of_the_sea` items. CompactResources stores the base material and compression tier in the item's Persistent Data Container, then assigns an item model such as `compactresources:item/compressed/cobblestone_x9`.
+Compressed resources are custom `minecraft:heart_of_the_sea` items. CompactResources stores the base material and compression tier in the item's Persistent Data Container, then assigns an item model such as `compactresources:item/compressed/cobblestone_x9`.
 
-Item names are Adventure translatable components. A compressed cobblestone item is named as `block.minecraft.cobblestone` plus ` x9`, so each client sees the block name in its own language.
+Item names are Adventure translatable components. A compressed cobblestone item is named as `block.minecraft.cobblestone` plus ` x9`, while a compressed arrow item uses `item.minecraft.arrow` plus ` x9`, so each client sees the base material name in its own language.
 
-[CompactResourcesPack](https://modrinth.com/resourcepack/compactresourcespack) provides item model definitions for compressed blocks. Server owners can use the URL of the resource pack on Modrinth CDN and configure `resource-pack.url` plus `resource-pack.sha1`; Paper then sends it to clients on join.
+[CompactResourcesPack](https://modrinth.com/resourcepack/compactresourcespack) provides item model definitions for compressed resources. Server owners can use the URL of the resource pack on Modrinth CDN and configure `resource-pack.url` plus `resource-pack.sha1`; Paper then sends it to clients on join.
 
-During the item model migration, CompactResources upgrades older compressed block items that still carry legacy Custom Model Data metadata when players join or move those items.
+During the item model migration, CompactResources upgrades older compressed resource items that still carry legacy Custom Model Data metadata when players join or move those items.
 
 Permissions:
 

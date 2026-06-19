@@ -3,13 +3,17 @@ package io.github.tetratheta.compactresources.compression;
 import java.util.Locale;
 import org.bukkit.Material;
 
-/// Defines every base block that can be represented as a compressed block.
+/// Defines every base material that can be represented as a compressed resource item.
 public enum CompressedMaterial {
   AMETHYST_BLOCK(Material.AMETHYST_BLOCK),
   ANDESITE(Material.ANDESITE),
+  ARROW(Material.ARROW),
   BASALT(Material.BASALT),
+  BEETROOT(Material.BEETROOT),
   BLACKSTONE(Material.BLACKSTONE),
+  BONE_BLOCK(Material.BONE_BLOCK),
   CALCITE(Material.CALCITE),
+  CARROT(Material.CARROT),
   CLAY(Material.CLAY),
   COAL_BLOCK(Material.COAL_BLOCK),
   COBBLED_DEEPSLATE(Material.COBBLED_DEEPSLATE),
@@ -23,18 +27,23 @@ public enum CompressedMaterial {
   GOLD_BLOCK(Material.GOLD_BLOCK),
   GRANITE(Material.GRANITE),
   GRAVEL(Material.GRAVEL),
+  HAY_BLOCK(Material.HAY_BLOCK),
   IRON_BLOCK(Material.IRON_BLOCK),
   LAPIS_BLOCK(Material.LAPIS_BLOCK),
+  MAGMA_CREAM(Material.MAGMA_CREAM),
   NETHERITE_BLOCK(Material.NETHERITE_BLOCK),
   NETHERRACK(Material.NETHERRACK),
+  POTATO(Material.POTATO),
   QUARTZ_BLOCK(Material.QUARTZ_BLOCK),
   RAW_COPPER_BLOCK(Material.RAW_COPPER_BLOCK),
   RAW_GOLD_BLOCK(Material.RAW_GOLD_BLOCK),
   RAW_IRON_BLOCK(Material.RAW_IRON_BLOCK),
+  REDSTONE_BLOCK(Material.REDSTONE_BLOCK),
   SAND(Material.SAND),
   SOUL_SAND(Material.SOUL_SAND),
   SOUL_SOIL(Material.SOUL_SOIL),
   STONE(Material.STONE),
+  SUGAR_CANE(Material.SUGAR_CANE),
   TUFF(Material.TUFF);
 
   private final Material baseMaterial;
@@ -44,7 +53,7 @@ public enum CompressedMaterial {
   CompressedMaterial(Material baseMaterial) {
     this.baseMaterial = baseMaterial;
     id = baseMaterial.getKey().getKey().toLowerCase(Locale.ROOT);
-    translationKey = "block.minecraft." + id;
+    translationKey = baseMaterial.translationKey();
   }
 
   /// Resolves a serialized ID into a compressed material.
@@ -69,7 +78,7 @@ public enum CompressedMaterial {
     return null;
   }
 
-  /// Returns the vanilla block material used as the base recipe ingredient.
+  /// Returns the vanilla material used as the base recipe ingredient.
   ///
   /// @return base material
   public Material baseMaterial() {
@@ -85,7 +94,7 @@ public enum CompressedMaterial {
 
   /// Returns the vanilla translation key used in item names.
   ///
-  /// @return block translation key
+  /// @return vanilla material translation key
   public String translationKey() {
     return translationKey;
   }

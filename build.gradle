@@ -11,7 +11,7 @@ plugins {
 }
 
 group = "io.github.tetratheta"
-version = "2.0.0"
+version = "2.1.0"
 
 def verMC = "26.1.2" // Minecraft (Modrinth, Hangar)
 def verAPI = "26.1.2" // API (dependencies & plugin.yml)

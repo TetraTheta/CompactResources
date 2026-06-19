@@ -21,8 +21,8 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 
-/// Migrates legacy compressed block item metadata to the current item_model format.
-public class CREventCompressedBlockMigration implements Listener {
+/// Migrates legacy compressed resource metadata to the current item_model format.
+public class CREventCompressionMigration implements Listener {
   private static final String KEY_MATERIAL = "compressed_material";
   private static final String KEY_LEVEL = "compression_level";
 
@@ -35,14 +35,14 @@ public class CREventCompressedBlockMigration implements Listener {
   ///
   /// @param plugin plugin used for namespaced keys
   /// @param nextTickScheduler runtime-owned scheduler for delayed inventory updates
-  public CREventCompressedBlockMigration(JavaPlugin plugin, Consumer<Runnable> nextTickScheduler) {
+  public CREventCompressionMigration(JavaPlugin plugin, Consumer<Runnable> nextTickScheduler) {
     this.plugin = plugin;
     this.nextTickScheduler = nextTickScheduler;
     materialKey = new NamespacedKey(plugin, KEY_MATERIAL);
     levelKey = new NamespacedKey(plugin, KEY_LEVEL);
   }
 
-  /// Migrates compressed blocks in a player's inventory after join-time item loading.
+  /// Migrates compressed resources in a player's inventory after join-time item loading.
   ///
   /// @param e player join event
   @EventHandler(priority = EventPriority.MONITOR)
@@ -50,7 +50,7 @@ public class CREventCompressedBlockMigration implements Listener {
     nextTickScheduler.accept(() -> migratePlayerInventory(e.getPlayer()));
   }
 
-  /// Migrates compressed blocks after inventory clicks expose old items.
+  /// Migrates compressed resources after inventory clicks expose old items.
   ///
   /// @param e inventory click event
   @EventHandler(priority = EventPriority.MONITOR)
@@ -63,7 +63,7 @@ public class CREventCompressedBlockMigration implements Listener {
         });
   }
 
-  /// Migrates compressed blocks after creative inventory edits expose old items.
+  /// Migrates compressed resources after creative inventory edits expose old items.
   ///
   /// @param e creative inventory event
   @EventHandler(priority = EventPriority.MONITOR)
@@ -76,7 +76,7 @@ public class CREventCompressedBlockMigration implements Listener {
         });
   }
 
-  /// Migrates compressed block drops after player pickup.
+  /// Migrates compressed resource drops after player pickup.
   ///
   /// @param e entity pickup event
   @EventHandler(priority = EventPriority.MONITOR)
@@ -84,7 +84,7 @@ public class CREventCompressedBlockMigration implements Listener {
     nextTickScheduler.accept(() -> migrateItem(e.getItem().getItemStack()));
   }
 
-  /// Migrates compressed block drops after hopper-like inventory pickup.
+  /// Migrates compressed resource drops after hopper-like inventory pickup.
   ///
   /// @param e inventory pickup event
   @EventHandler(priority = EventPriority.MONITOR)
@@ -105,7 +105,7 @@ public class CREventCompressedBlockMigration implements Listener {
     }
   }
 
-  /// Rewrites old compressed block metadata into the current client-facing shape.
+  /// Rewrites old compressed resource metadata into the current client-facing shape.
   private void migrateItem(ItemStack item) {
     if (item == null || item.getType() != Material.HEART_OF_THE_SEA) return;
 
@@ -133,7 +133,7 @@ public class CREventCompressedBlockMigration implements Listener {
     meta.setCustomModelDataComponent(null);
   }
 
-  /// Returns the resource-pack item_model key for one compressed block.
+  /// Returns the resource-pack item_model key for one compressed resource item.
   private NamespacedKey getItemModelKey(CompressedMaterial material, CompressionLevel level) {
     return new NamespacedKey(plugin, "item/compressed/" + material.id() + "_" + level.id());
   }
