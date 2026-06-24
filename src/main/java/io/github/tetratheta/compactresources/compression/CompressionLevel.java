@@ -5,11 +5,11 @@ public enum CompressionLevel {
   X9("x9", 9),
   X81("x81", 81),
   X729("x729", 729);
-
+  //
   private final String id;
   private final int multiplier;
 
-  /// @param id stable configuration and PDC identifier
+  /// @param id         stable configuration and PDC identifier
   /// @param multiplier amount of base materials represented by one item
   CompressionLevel(String id, int multiplier) {
     this.id = id;

@@ -25,7 +25,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class CREventCompressionMigration implements Listener {
   private static final String KEY_MATERIAL = "compressed_material";
   private static final String KEY_LEVEL = "compression_level";
-
   private final JavaPlugin plugin;
   private final NamespacedKey materialKey;
   private final NamespacedKey levelKey;
@@ -33,7 +32,7 @@ public class CREventCompressionMigration implements Listener {
 
   /// Creates a temporary metadata migration listener.
   ///
-  /// @param plugin plugin used for namespaced keys
+  /// @param plugin            plugin used for namespaced keys
   /// @param nextTickScheduler runtime-owned scheduler for delayed inventory updates
   public CREventCompressionMigration(JavaPlugin plugin, Consumer<Runnable> nextTickScheduler) {
     this.plugin = plugin;
@@ -55,12 +54,11 @@ public class CREventCompressionMigration implements Listener {
   /// @param e inventory click event
   @EventHandler(priority = EventPriority.MONITOR)
   public void onInventoryClick(InventoryClickEvent e) {
-    nextTickScheduler.accept(
-        () -> {
-          migrateItem(e.getCurrentItem());
-          migrateItem(e.getCursor());
-          migrateInventory(e.getWhoClicked().getInventory());
-        });
+    nextTickScheduler.accept(() -> {
+      migrateItem(e.getCurrentItem());
+      migrateItem(e.getCursor());
+      migrateInventory(e.getWhoClicked().getInventory());
+    });
   }
 
   /// Migrates compressed resources after creative inventory edits expose old items.
@@ -68,12 +66,11 @@ public class CREventCompressionMigration implements Listener {
   /// @param e creative inventory event
   @EventHandler(priority = EventPriority.MONITOR)
   public void onInventoryCreative(InventoryCreativeEvent e) {
-    nextTickScheduler.accept(
-        () -> {
-          migrateItem(e.getCurrentItem());
-          migrateItem(e.getCursor());
-          migrateInventory(e.getWhoClicked().getInventory());
-        });
+    nextTickScheduler.accept(() -> {
+      migrateItem(e.getCurrentItem());
+      migrateItem(e.getCursor());
+      migrateInventory(e.getWhoClicked().getInventory());
+    });
   }
 
   /// Migrates compressed resource drops after player pickup.
@@ -100,27 +97,20 @@ public class CREventCompressionMigration implements Listener {
   /// Migrates all item stacks in one inventory.
   private void migrateInventory(Inventory inventory) {
     if (inventory == null) return;
-    for (ItemStack item : inventory.getContents()) {
-      migrateItem(item);
-    }
+    for (ItemStack item : inventory.getContents()) migrateItem(item);
   }
 
   /// Rewrites old compressed resource metadata into the current client-facing shape.
   private void migrateItem(ItemStack item) {
     if (item == null || item.getType() != Material.HEART_OF_THE_SEA) return;
-
     ItemMeta meta = item.getItemMeta();
     if (meta == null) return;
-
-    String materialId =
-        meta.getPersistentDataContainer().get(materialKey, PersistentDataType.STRING);
+    String materialId = meta.getPersistentDataContainer().get(materialKey, PersistentDataType.STRING);
     String levelId = meta.getPersistentDataContainer().get(levelKey, PersistentDataType.STRING);
     if (materialId == null || levelId == null) return;
-
     CompressedMaterial material = CompressedMaterial.fromId(materialId);
     CompressionLevel level = CompressionLevel.fromId(levelId);
     if (material == null || level == null) return;
-
     meta.setRarity(ItemRarity.COMMON);
     meta.setItemModel(getItemModelKey(material, level));
     clearLegacyCustomModelData(meta);

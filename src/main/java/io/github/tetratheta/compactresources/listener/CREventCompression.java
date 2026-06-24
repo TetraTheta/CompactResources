@@ -43,7 +43,6 @@ public class CREventCompression implements Listener {
       e.getInventory().setResult(result);
       return;
     }
-
     for (ItemStack item : e.getInventory().getMatrix()) {
       if (!compressionService.isCompressedResource(item)) continue;
       e.getInventory().setResult(null);

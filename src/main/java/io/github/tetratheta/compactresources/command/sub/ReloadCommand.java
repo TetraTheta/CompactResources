@@ -11,7 +11,6 @@ import org.bukkit.command.CommandSender;
 /// Builds and executes the /cr reload subcommand.
 public class ReloadCommand implements CRSubCommand {
   private static final String PERMISSION_RELOAD = "compactresources.reload";
-
   private final CompactResources plugin;
 
   /// Creates the reload subcommand.
@@ -26,14 +25,11 @@ public class ReloadCommand implements CRSubCommand {
   /// @return reload subcommand builder
   @Override
   public LiteralArgumentBuilder<CommandSourceStack> getCommand() {
-    return Commands.literal("reload")
-        .requires(ctx -> ctx.getSender().hasPermission(PERMISSION_RELOAD))
-        .executes(
-            ctx -> {
-              CommandSender sender = ctx.getSource().getSender();
-              plugin.reloadRuntime();
-              plugin.getRuntime().getMessageService().send(sender, "command.reload.success");
-              return Command.SINGLE_SUCCESS;
-            });
+    return Commands.literal("reload").requires(ctx -> ctx.getSender().hasPermission(PERMISSION_RELOAD)).executes(ctx -> {
+      CommandSender sender = ctx.getSource().getSender();
+      plugin.reloadRuntime();
+      plugin.getRuntime().getMessageService().send(sender, "command.reload.success");
+      return Command.SINGLE_SUCCESS;
+    });
   }
 }

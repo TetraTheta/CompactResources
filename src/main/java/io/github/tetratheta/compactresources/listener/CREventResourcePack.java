@@ -15,9 +15,8 @@ public class CREventResourcePack implements Listener {
   /// Creates a resource pack listener.
   ///
   /// @param resourcePackService service used to send resource pack requests
-  /// @param nextTickScheduler runtime-owned scheduler for delayed resource pack delivery
-  public CREventResourcePack(
-      ResourcePackService resourcePackService, Consumer<Runnable> nextTickScheduler) {
+  /// @param nextTickScheduler   runtime-owned scheduler for delayed resource pack delivery
+  public CREventResourcePack(ResourcePackService resourcePackService, Consumer<Runnable> nextTickScheduler) {
     this.nextTickScheduler = nextTickScheduler;
     this.resourcePackService = resourcePackService;
   }

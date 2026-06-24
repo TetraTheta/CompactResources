@@ -19,6 +19,7 @@ public class CompactResourcesRuntime extends PluginRuntime {
   private final CompressionService compressionService;
   private final CRConfig config;
   private final MessageService messageService;
+  private final StackSizeService stackSizeService;
 
   /// Creates all services from the current disk configuration and registers runtime listeners.
   ///
@@ -28,13 +29,9 @@ public class CompactResourcesRuntime extends PluginRuntime {
     config = new CRConfig(plugin);
     messageService = new MessageService(plugin, config.getLanguage());
     if (config.validateAndFix(messageService)) config.saveConfig();
-
-    StackSizeService stackSizeService =
-        new StackSizeService(config.loadStackSizeRules(), messageService);
-    compressionService =
-        config.isCompressionEnabled() ? new CompressionService(plugin, stackSizeService) : null;
+    stackSizeService = new StackSizeService(config.loadStackSizeRules(), messageService);
+    compressionService = config.isCompressionEnabled() ? new CompressionService(plugin, stackSizeService) : null;
     if (compressionService != null) compressionService.registerRecipes();
-
     ResourcePackService resourcePackService = new ResourcePackService(config, messageService);
     compactService = new CompactService(plugin, stackSizeService, compressionService);
     registerListener(new CREventMaxStack(stackSizeService, this::runTask));
@@ -65,6 +62,13 @@ public class CompactResourcesRuntime extends PluginRuntime {
   /// @return localized message service
   public MessageService getMessageService() {
     return messageService;
+  }
+
+  /// Returns the active stack-size service.
+  ///
+  /// @return stack-size service
+  public StackSizeService getStackSizeService() {
+    return stackSizeService;
   }
 
   /// Unregisters runtime Bukkit resources.

@@ -1,5 +1,5 @@
 api-version: '${api_version}'
-authors: ['TetraTheta']
+authors: [ 'TetraTheta' ]
 load: POSTWORLD
 main: io.github.tetratheta.compactresources.CompactResources
 name: CompactResources
@@ -11,6 +11,9 @@ permissions:
   compactresources.config:
     default: op
     description: View and edit CompactResources configuration values
+  compactresources.ignore:
+    default: true
+    description: Mark main-hand items as stack-size exceptions
   compactresources.reload:
     default: op
     description: Reload CompactResources configuration from the disk

@@ -18,7 +18,7 @@ public class ResourcePackService {
 
   /// Creates a resource pack delivery service from current configuration values.
   ///
-  /// @param config active configuration facade
+  /// @param config         active configuration facade
   /// @param messageService message service used for logs and prompts
   public ResourcePackService(CRConfig config, MessageService messageService) {
     this.messageService = messageService;
@@ -32,14 +32,8 @@ public class ResourcePackService {
   /// @param player player that should receive the resource pack
   public void sendTo(Player player) {
     if (!enabled || packInfo == null) return;
-
-    ResourcePackRequest request =
-        ResourcePackRequest.resourcePackRequest()
-            .packs(packInfo)
-            .replace(false)
-            .required(forced)
-            .prompt(Component.text(messageService.get("resource-pack.prompt")))
-            .build();
+    ResourcePackRequest request = ResourcePackRequest.resourcePackRequest().packs(packInfo).replace(false).required(forced)
+                                                     .prompt(Component.text(messageService.get("resource-pack.prompt"))).build();
     player.sendResourcePacks(request);
   }
 
@@ -48,13 +42,8 @@ public class ResourcePackService {
     String url = config.getResourcePackUrl();
     String sha1 = config.getResourcePackSha1();
     if (url.isBlank() || sha1.isBlank()) return null;
-
     try {
-      return ResourcePackInfo.resourcePackInfo()
-          .id(config.getResourcePackUuid())
-          .uri(new URI(url))
-          .hash(sha1)
-          .build();
+      return ResourcePackInfo.resourcePackInfo().id(config.getResourcePackUuid()).uri(new URI(url)).hash(sha1).build();
     } catch (IllegalArgumentException | URISyntaxException e) {
       messageService.logWarning("log.resource-pack.invalid-config", e.getMessage());
       return null;

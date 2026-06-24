@@ -11,9 +11,8 @@ import org.jetbrains.annotations.NotNull;
 
 /// Groups services and Bukkit resources that live for one enabled plugin runtime.
 ///
-/// Subclasses should create domain services in their constructor, register listeners and scheduled
-/// tasks through this class, and override `terminate()` when they need to save or close domain
-/// resources before Bukkit resources are released.
+/// Subclasses should create domain services in their constructor, register listeners and scheduled tasks through this class, and override
+/// `terminate()` when they need to save or close domain resources before Bukkit resources are released.
 ///
 /// Example:
 /// ```java
@@ -33,6 +32,7 @@ import org.jetbrains.annotations.NotNull;
 ///   }
 /// }
 /// ```
+///
 public class PluginRuntime {
   private final JavaPlugin plugin;
   private final Set<BukkitTask> tasks;
@@ -64,38 +64,34 @@ public class PluginRuntime {
 
   /// Schedules a synchronous Bukkit task owned by this runtime.
   ///
-  /// Completed tasks are removed from the runtime task set, while pending tasks are still cancelled
-  /// if this runtime terminates before Bukkit runs them.
+  /// Completed tasks are removed from the runtime task set, while pending tasks are still cancelled if this runtime terminates before Bukkit runs
+  /// them.
   ///
   /// @param runnable task to run on the next server tick
   protected void runTask(@NotNull Runnable runnable) {
     AtomicReference<BukkitTask> taskReference = new AtomicReference<>();
-    BukkitTask task =
-        plugin
-            .getServer()
-            .getScheduler()
-            .runTask(
-                plugin,
-                () -> {
-                  try {
-                    runnable.run();
-                  } finally {
-                    tasks.remove(taskReference.get());
-                  }
-                });
+    BukkitTask task = plugin.getServer().getScheduler().runTask(
+      plugin, () -> {
+        try {
+          runnable.run();
+        } finally {
+          tasks.remove(taskReference.get());
+        }
+      }
+    );
     taskReference.set(task);
     registerTask(task);
   }
 
   /// Releases all Bukkit resources owned by this runtime.
   ///
-  /// Subclasses that override this method should release domain resources first and then call
-  /// `super.terminate()`.
+  /// Subclasses that override this method should release domain resources first and then call `super.terminate()`.
   public void terminate() {
-    for (Listener listener : listeners) HandlerList.unregisterAll(listener);
+    for (Listener listener : listeners)
+      HandlerList.unregisterAll(listener);
     listeners.clear();
-
-    for (BukkitTask task : tasks) task.cancel();
+    for (BukkitTask task : tasks)
+      task.cancel();
     tasks.clear();
   }
 }

@@ -6,6 +6,7 @@ import io.github.tetratheta.compactresources.CompactResources;
 import io.github.tetratheta.compactresources.command.common.CRSubCommand;
 import io.github.tetratheta.compactresources.command.sub.CompactCommand;
 import io.github.tetratheta.compactresources.command.sub.ConfigCommand;
+import io.github.tetratheta.compactresources.command.sub.IgnoreCommand;
 import io.github.tetratheta.compactresources.command.sub.ReloadCommand;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
@@ -35,7 +36,6 @@ public class CRCommand {
   ///
   /// @return root-level subcommands
   private List<CRSubCommand> getSubCommands() {
-    return List.of(
-        new CompactCommand(plugin), new ReloadCommand(plugin), new ConfigCommand(plugin));
+    return List.of(new CompactCommand(plugin), new IgnoreCommand(plugin), new ReloadCommand(plugin), new ConfigCommand(plugin));
   }
 }

@@ -45,7 +45,7 @@ public enum CompressedMaterial {
   STONE(Material.STONE),
   SUGAR_CANE(Material.SUGAR_CANE),
   TUFF(Material.TUFF);
-
+  //
   private final Material baseMaterial;
   private final String id;
   private final String translationKey;

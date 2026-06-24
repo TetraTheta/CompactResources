@@ -22,15 +22,14 @@ public class CRConfig extends BaseConfig {
   private static final String PATH_DEFAULT_ENABLED = "module.max-stack-size.default.enabled";
   private static final String PATH_DEFAULT_SIZE = "module.max-stack-size.default.size";
   private static final String PATH_ID_RULES = "module.max-stack-size.id";
-  private static final String PATH_TAG_RULES = "module.max-stack-size.tag";
   private static final String PATH_REGEX_RULES = "module.max-stack-size.regex";
   private static final String PATH_RESOURCE_PACK_ENABLED = "resource-pack.enabled";
   private static final String PATH_RESOURCE_PACK_FORCE = "resource-pack.force";
-  private static final String PATH_RESOURCE_PACK_URL = "resource-pack.url";
   private static final String PATH_RESOURCE_PACK_SHA1 = "resource-pack.sha1";
+  private static final String PATH_RESOURCE_PACK_URL = "resource-pack.url";
   private static final String PATH_RESOURCE_PACK_UUID = "resource-pack.uuid";
-  private static final UUID DEFAULT_RESOURCE_PACK_UUID =
-      UUID.fromString("9d54b89a-1738-4307-abd8-3f7f9d8613f5");
+  private static final String PATH_TAG_RULES = "module.max-stack-size.tag";
+  private static final UUID DEFAULT_RESOURCE_PACK_UUID = UUID.fromString("9d54b89a-1738-4307-abd8-3f7f9d8613f5");
 
   /// Creates a configuration facade bound to the provided plugin instance.
   ///
@@ -138,7 +137,7 @@ public class CRConfig extends BaseConfig {
 
   /// Updates a max stack-size rule configured for an item ID.
   ///
-  /// @param itemId item ID with optional namespace
+  /// @param itemId       item ID with optional namespace
   /// @param maxStackSize configured max stack size
   public void setItemStackSize(String itemId, int maxStackSize) {
     setMapStackSize(PATH_ID_RULES, itemId, maxStackSize);
@@ -154,7 +153,7 @@ public class CRConfig extends BaseConfig {
 
   /// Updates a max stack-size rule configured for an item tag ID.
   ///
-  /// @param tagId item tag ID with optional namespace
+  /// @param tagId        item tag ID with optional namespace
   /// @param maxStackSize configured max stack size
   public void setTagStackSize(String tagId, int maxStackSize) {
     setMapStackSize(PATH_TAG_RULES, tagId, maxStackSize);
@@ -196,28 +195,21 @@ public class CRConfig extends BaseConfig {
   private boolean validateDefaultRule() {
     boolean changed = false;
     ConfigurationSection section =
-        getConfig().contains("module.max-stack-size.default", true)
-            ? getConfig().getConfigurationSection("module.max-stack-size.default")
-            : null;
+      getConfig().contains("module.max-stack-size.default", true) ? getConfig().getConfigurationSection("module.max-stack-size.default") : null;
     if (section == null) {
       section = getConfig().createSection("module.max-stack-size.default");
       changed = true;
     }
-
     if (!getConfig().contains(PATH_DEFAULT_ENABLED, true)) {
       section.set("enabled", false);
       changed = true;
     }
-
     int maxStackSize = normalizeStackSize(section.getInt("size", 64));
     Object rawMaxStackSize = section.get("size");
-    if (!getConfig().contains(PATH_DEFAULT_SIZE, true)
-        || !(rawMaxStackSize instanceof Number number)
-        || number.intValue() != maxStackSize) {
+    if (!getConfig().contains(PATH_DEFAULT_SIZE, true) || !(rawMaxStackSize instanceof Number number) || number.intValue() != maxStackSize) {
       section.set("size", maxStackSize);
       changed = true;
     }
-
     return changed;
   }
 
@@ -243,7 +235,6 @@ public class CRConfig extends BaseConfig {
       getConfig().set(PATH_RESOURCE_PACK_SHA1, "");
       changed = true;
     }
-
     String configuredUuid = getConfig().getString(PATH_RESOURCE_PACK_UUID, "").strip();
     try {
       if (configuredUuid.isBlank()) throw new IllegalArgumentException();
@@ -269,13 +260,10 @@ public class CRConfig extends BaseConfig {
   ///
   /// @param messageService message service used to report recoverable configuration issues
   private boolean validateRegexRules(MessageService messageService) {
-    if (!getConfig().contains(PATH_REGEX_RULES, true) || !getConfig().isList(PATH_REGEX_RULES))
-      return false;
-
+    if (!getConfig().contains(PATH_REGEX_RULES, true) || !getConfig().isList(PATH_REGEX_RULES)) return false;
     List<Map<?, ?>> regexRules = getConfig().getMapList(PATH_REGEX_RULES);
     List<Map<String, Object>> fixedRules = new ArrayList<>();
     boolean changed = false;
-
     for (Map<?, ?> rule : regexRules) {
       Object patternValue = rule.get("pattern");
       if (!(patternValue instanceof String pattern) || pattern.isBlank()) {
@@ -283,7 +271,6 @@ public class CRConfig extends BaseConfig {
         changed = true;
         continue;
       }
-
       try {
         Pattern.compile(pattern);
       } catch (PatternSyntaxException e) {
@@ -291,35 +278,29 @@ public class CRConfig extends BaseConfig {
         changed = true;
         continue;
       }
-
       int maxStackSize = 1;
       Object sizeValue = rule.get("size");
       if (sizeValue instanceof Number number) maxStackSize = number.intValue();
       int normalizedMaxStackSize = normalizeStackSize(maxStackSize);
-      if (!(sizeValue instanceof Number number) || number.intValue() != normalizedMaxStackSize)
-        changed = true;
-
+      if (!(sizeValue instanceof Number number) || number.intValue() != normalizedMaxStackSize) changed = true;
       Map<String, Object> fixedRule = new LinkedHashMap<>();
       fixedRule.put("pattern", pattern);
       fixedRule.put("size", normalizedMaxStackSize);
       fixedRules.add(fixedRule);
     }
-
     if (changed) getConfig().set(PATH_REGEX_RULES, fixedRules);
     return changed;
   }
 
   /// Ensures a map-based configuration section exists and clamps all stack-size values.
   ///
-  /// @param path section path to validate
-  /// @param itemIds whether section keys should be validated as item IDs
+  /// @param path           section path to validate
+  /// @param itemIds        whether section keys should be validated as item IDs
   /// @param messageService message service used to report recoverable configuration issues
   private boolean validateMapSection(String path, boolean itemIds, MessageService messageService) {
     if (!getConfig().contains(path, true)) return false;
-
     ConfigurationSection section = getConfig().getConfigurationSection(path);
     if (section == null) return false;
-
     boolean changed = false;
     for (String key : section.getKeys(false)) {
       int normalized = normalizeStackSize(section.getInt(key, 1));
@@ -328,9 +309,7 @@ public class CRConfig extends BaseConfig {
         section.set(key, normalized);
         changed = true;
       }
-
-      if (itemIds && resolveMaterial(key) == null)
-        messageService.logWarning("log.config.unknown-item-id", key);
+      if (itemIds && resolveMaterial(key) == null) messageService.logWarning("log.config.unknown-item-id", key);
     }
     return changed;
   }
@@ -342,25 +321,21 @@ public class CRConfig extends BaseConfig {
   private Map<String, Integer> loadMapRules(String path) {
     Map<String, Integer> rules = new LinkedHashMap<>();
     if (!getConfig().contains(path, true)) return rules;
-
     ConfigurationSection section = getConfig().getConfigurationSection(path);
     if (section == null) return rules;
-
-    for (String key : section.getKeys(false))
-      rules.put(normalizeId(key), normalizeStackSize(section.getInt(key)));
+    for (String key : section.getKeys(false)) rules.put(normalizeId(key), normalizeStackSize(section.getInt(key)));
     return rules;
   }
 
   /// Reads a stack-size value from a map-based rule section.
   ///
   /// @param path section path to read
-  /// @param id configured item or tag ID
+  /// @param id   configured item or tag ID
   /// @return configured max stack size, or null when no rule exists
   private Integer getMapStackSize(String path, String id) {
     String normalizedId = normalizeId(id);
     ConfigurationSection section = getConfig().getConfigurationSection(path);
     if (section == null) return null;
-
     for (String key : section.getKeys(false)) {
       if (normalizeId(key).equals(normalizedId)) return normalizeStackSize(section.getInt(key));
     }
@@ -369,8 +344,8 @@ public class CRConfig extends BaseConfig {
 
   /// Writes a stack-size value into a map-based rule section.
   ///
-  /// @param path section path to write
-  /// @param id configured item or tag ID
+  /// @param path         section path to write
+  /// @param id           configured item or tag ID
   /// @param maxStackSize configured max stack size
   private void setMapStackSize(String path, String id, int maxStackSize) {
     String normalizedId = normalizeId(id);
@@ -379,10 +354,8 @@ public class CRConfig extends BaseConfig {
       getConfig().set(path, null);
       section = getConfig().createSection(path);
     }
-
     for (String key : section.getKeys(false)) {
-      if (normalizeId(key).equals(normalizedId) && !key.equals(normalizedId))
-        section.set(key, null);
+      if (normalizeId(key).equals(normalizedId) && !key.equals(normalizedId)) section.set(key, null);
     }
     section.set(normalizedId, normalizeStackSize(maxStackSize));
   }
@@ -392,14 +365,11 @@ public class CRConfig extends BaseConfig {
   /// @return compiled regex rules
   private List<StackSizeRules.RegexRule> loadRegexRules() {
     List<StackSizeRules.RegexRule> rules = new ArrayList<>();
-    if (!getConfig().contains(PATH_REGEX_RULES, true) || !getConfig().isList(PATH_REGEX_RULES))
-      return rules;
-
+    if (!getConfig().contains(PATH_REGEX_RULES, true) || !getConfig().isList(PATH_REGEX_RULES)) return rules;
     for (Map<?, ?> rule : getConfig().getMapList(PATH_REGEX_RULES)) {
       Object patternValue = rule.get("pattern");
       Object sizeValue = rule.get("size");
-      if (!(patternValue instanceof String pattern) || !(sizeValue instanceof Number number))
-        continue;
+      if (!(patternValue instanceof String pattern) || !(sizeValue instanceof Number number)) continue;
       rules.add(new StackSizeRules.RegexRule(Pattern.compile(pattern), number.intValue()));
     }
     return rules;
@@ -429,7 +399,6 @@ public class CRConfig extends BaseConfig {
   private Material resolveMaterial(String itemId) {
     NamespacedKey key = NamespacedKey.fromString(normalizeId(itemId));
     if (key == null) return null;
-
     Material material = Registry.MATERIAL.get(key);
     if (material == null || !material.isItem()) return null;
     return material;

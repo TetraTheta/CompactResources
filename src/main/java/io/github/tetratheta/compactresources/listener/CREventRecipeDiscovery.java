@@ -15,9 +15,8 @@ public class CREventRecipeDiscovery implements Listener {
   /// Creates a recipe discovery listener.
   ///
   /// @param compressionService service that owns compression recipe keys
-  /// @param nextTickScheduler runtime-owned scheduler for delayed recipe discovery
-  public CREventRecipeDiscovery(
-      CompressionService compressionService, Consumer<Runnable> nextTickScheduler) {
+  /// @param nextTickScheduler  runtime-owned scheduler for delayed recipe discovery
+  public CREventRecipeDiscovery(CompressionService compressionService, Consumer<Runnable> nextTickScheduler) {
     this.compressionService = compressionService;
     this.nextTickScheduler = nextTickScheduler;
   }
@@ -27,7 +26,6 @@ public class CREventRecipeDiscovery implements Listener {
   /// @param e player join event
   @EventHandler(priority = EventPriority.MONITOR)
   public void onPlayerJoin(PlayerJoinEvent e) {
-    nextTickScheduler.accept(
-        () -> e.getPlayer().discoverRecipes(compressionService.getRecipeKeys()));
+    nextTickScheduler.accept(() -> e.getPlayer().discoverRecipes(compressionService.getRecipeKeys()));
   }
 }

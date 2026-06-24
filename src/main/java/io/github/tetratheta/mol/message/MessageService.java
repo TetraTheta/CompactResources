@@ -19,7 +19,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class MessageService {
   private static final String DEFAULT_LANGUAGE = "ko";
   private static final String FALLBACK_LANGUAGE = "en";
-
   private final String defaultLanguage;
   private final String fallbackLanguage;
   private final String activeLanguage;
@@ -32,30 +31,20 @@ public class MessageService {
 
   /// Creates a message service for a configured language with English fallback messages.
   ///
-  /// @param plugin plugin instance used to load bundled language resources
+  /// @param plugin   plugin instance used to load bundled language resources
   /// @param language requested language code
   public MessageService(JavaPlugin plugin, String language) {
-    this(
-        plugin,
-        language,
-        DEFAULT_LANGUAGE,
-        FALLBACK_LANGUAGE,
-        List.of("languages/en.yml", "languages/ko.yml"));
+    this(plugin, language, DEFAULT_LANGUAGE, FALLBACK_LANGUAGE, List.of("languages/en.yml", "languages/ko.yml"));
   }
 
   /// Creates a message service with caller-defined bundled language resources.
   ///
-  /// @param plugin plugin instance used to load bundled language resources
-  /// @param language requested language code
-  /// @param defaultLanguage language used when the requested language is blank
+  /// @param plugin           plugin instance used to load bundled language resources
+  /// @param language         requested language code
+  /// @param defaultLanguage  language used when the requested language is blank
   /// @param fallbackLanguage language used when a message path is missing
   /// @param bundledLanguages resource paths copied to the plugin data folder
-  public MessageService(
-      JavaPlugin plugin,
-      String language,
-      String defaultLanguage,
-      String fallbackLanguage,
-      List<String> bundledLanguages) {
+  public MessageService(JavaPlugin plugin, String language, String defaultLanguage, String fallbackLanguage, List<String> bundledLanguages) {
     this.plugin = plugin;
     this.defaultLanguage = normalizeLanguage(defaultLanguage, DEFAULT_LANGUAGE);
     this.fallbackLanguage = normalizeLanguage(fallbackLanguage, FALLBACK_LANGUAGE);
@@ -77,7 +66,7 @@ public class MessageService {
 
   /// Returns a localized message, optionally formatted with `{0}` style positional arguments.
   ///
-  /// @param path message path
+  /// @param path      message path
   /// @param arguments positional values consumed by `MessageFormat`
   /// @return localized message, fallback message, or the path itself when no message exists
   public String get(String path, Object... arguments) {
@@ -86,8 +75,8 @@ public class MessageService {
 
   /// Sends a localized message to a command sender.
   ///
-  /// @param sender recipient
-  /// @param path message path
+  /// @param sender    recipient
+  /// @param path      message path
   /// @param arguments positional values consumed by `MessageFormat`
   public void send(CommandSender sender, String path, Object... arguments) {
     sender.sendMessage(get(path, arguments));
@@ -95,7 +84,7 @@ public class MessageService {
 
   /// Logs a localized warning message.
   ///
-  /// @param path message path
+  /// @param path      message path
   /// @param arguments positional values consumed by `MessageFormat`
   public void logWarning(String path, Object... arguments) {
     plugin.getLogger().warning(get(path, arguments));
@@ -103,7 +92,7 @@ public class MessageService {
 
   /// Logs a localized info message.
   ///
-  /// @param path message path
+  /// @param path      message path
   /// @param arguments positional values consumed by `MessageFormat`
   public void logInfo(String path, Object... arguments) {
     plugin.getLogger().info(get(path, arguments));
@@ -112,66 +101,58 @@ public class MessageService {
   /// Resolves a message from the requested language, its base language, then the fallback language.
   ///
   /// @param language normalized requested language code
-  /// @param path message path
+  /// @param path     message path
   /// @return localized message or path when no language contains it
   private String getMessage(String language, String path) {
     String message = getLanguageMessage(language, path);
     if (message != null) return message;
-
     String baseLanguage = getBaseLanguage(language);
     if (!baseLanguage.equals(language)) {
       message = getLanguageMessage(baseLanguage, path);
       if (message != null) return message;
     }
-
     message = getLanguageMessage(fallbackLanguage, path);
     if (message != null) return message;
-
     return path;
   }
 
   /// Resolves a message from the editable language file, then the bundled default resource.
   ///
   /// @param language normalized language code
-  /// @param path message path
+  /// @param path     message path
   /// @return localized message, or null when neither source contains it
   private String getLanguageMessage(String language, String path) {
     FileConfiguration languageMessages = loadLanguage(plugin, language);
     String message = languageMessages.getString(path);
     if (message != null) return message;
-
     FileConfiguration bundledMessages = loadBundledLanguage(language);
     return bundledMessages.getString(path);
   }
 
   /// Applies cached `MessageFormat` formatting while keeping broken format strings visible.
   ///
-  /// @param language normalized language code used as part of the cache key
-  /// @param message message pattern
-  /// @param path message path used for diagnostics
+  /// @param language  normalized language code used as part of the cache key
+  /// @param message   message pattern
+  /// @param path      message path used for diagnostics
   /// @param arguments positional values consumed by `MessageFormat`
   /// @return formatted message or the raw message when the pattern is invalid
   private String formatMessage(String language, String message, String path, Object... arguments) {
     if (arguments.length == 0) return message.replace("''", "'");
-
     String cacheKey = language + "\u0000" + message;
-    MessageFormat messageFormat =
-        messageFormatCache.computeIfAbsent(cacheKey, _ -> createMessageFormat(message, path));
+    MessageFormat messageFormat = messageFormatCache.computeIfAbsent(cacheKey, _ -> createMessageFormat(message, path));
     return messageFormat.format(arguments).replace('\u00a0', ' ');
   }
 
   /// Creates a `MessageFormat` for one translation pattern.
   ///
   /// @param message message pattern
-  /// @param path message path used for diagnostics
+  /// @param path    message path used for diagnostics
   /// @return compiled message format
   private MessageFormat createMessageFormat(String message, String path) {
     try {
       return new MessageFormat(message);
     } catch (IllegalArgumentException e) {
-      plugin
-          .getLogger()
-          .severe("Invalid message format for '" + path + "': " + e.getLocalizedMessage());
+      plugin.getLogger().severe("Invalid message format for '" + path + "': " + e.getLocalizedMessage());
       return new MessageFormat("'" + message.replace("'", "''") + "'");
     }
   }
@@ -188,25 +169,20 @@ public class MessageService {
 
   /// Loads a language file from the plugin data folder.
   ///
-  /// @param plugin plugin instance used to locate the data folder
+  /// @param plugin   plugin instance used to locate the data folder
   /// @param language language code to load
   /// @return loaded YAML configuration
   private FileConfiguration loadLanguage(JavaPlugin plugin, String language) {
     FileConfiguration cachedLanguage = languageCache.get(language);
     if (cachedLanguage != null) return cachedLanguage;
-
     File file = new File(plugin.getDataFolder(), "languages/" + language + ".yml");
     if (!file.exists()) {
-      if (!language.equals(fallbackLanguage) && missingLanguages.add(language)) {
-        plugin
-            .getLogger()
-            .warning("Language file is missing. Trying language fallbacks: " + language);
-      }
+      if (!language.equals(fallbackLanguage) && missingLanguages.add(language))
+        plugin.getLogger().warning("Language file is missing. Trying language fallbacks: " + language);
       FileConfiguration emptyLanguage = new YamlConfiguration();
       languageCache.put(language, emptyLanguage);
       return emptyLanguage;
     }
-
     FileConfiguration loadedLanguage = YamlConfiguration.loadConfiguration(file);
     languageCache.put(language, loadedLanguage);
     return loadedLanguage;
@@ -219,7 +195,6 @@ public class MessageService {
   private FileConfiguration loadBundledLanguage(String language) {
     FileConfiguration cachedLanguage = bundledLanguageCache.get(language);
     if (cachedLanguage != null) return cachedLanguage;
-
     String resourcePath = "languages/" + language + ".yml";
     try (InputStream stream = plugin.getResource(resourcePath)) {
       if (stream == null) {
@@ -227,20 +202,11 @@ public class MessageService {
         bundledLanguageCache.put(language, emptyLanguage);
         return emptyLanguage;
       }
-
-      FileConfiguration loadedLanguage =
-          YamlConfiguration.loadConfiguration(
-              new InputStreamReader(stream, StandardCharsets.UTF_8));
+      FileConfiguration loadedLanguage = YamlConfiguration.loadConfiguration(new InputStreamReader(stream, StandardCharsets.UTF_8));
       bundledLanguageCache.put(language, loadedLanguage);
       return loadedLanguage;
     } catch (Exception e) {
-      plugin
-          .getLogger()
-          .severe(
-              "Failed to load bundled language resource '"
-                  + resourcePath
-                  + "': "
-                  + e.getLocalizedMessage());
+      plugin.getLogger().severe("Failed to load bundled language resource '" + resourcePath + "': " + e.getLocalizedMessage());
       FileConfiguration emptyLanguage = new YamlConfiguration();
       bundledLanguageCache.put(language, emptyLanguage);
       return emptyLanguage;

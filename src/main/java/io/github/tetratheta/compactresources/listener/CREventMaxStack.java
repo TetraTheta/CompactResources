@@ -9,7 +9,11 @@ import org.bukkit.event.block.BlockDispenseEvent;
 import org.bukkit.event.block.CrafterCraftEvent;
 import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.entity.ItemSpawnEvent;
-import org.bukkit.event.inventory.*;
+import org.bukkit.event.inventory.FurnaceSmeltEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCreativeEvent;
+import org.bukkit.event.inventory.InventoryMoveItemEvent;
+import org.bukkit.event.inventory.InventoryPickupItemEvent;
 import org.bukkit.inventory.Inventory;
 
 /// Reapplies configured stack-size metadata after Bukkit inventory and item events mutate items.
@@ -19,7 +23,7 @@ public class CREventMaxStack implements Listener {
 
   /// Creates an event listener backed by the active stack-size service.
   ///
-  /// @param stackSizeService service used to apply configured stack sizes
+  /// @param stackSizeService  service used to apply configured stack sizes
   /// @param nextTickScheduler runtime-owned scheduler for delayed metadata updates
   public CREventMaxStack(StackSizeService stackSizeService, Consumer<Runnable> nextTickScheduler) {
     this.nextTickScheduler = nextTickScheduler;
@@ -55,12 +59,11 @@ public class CREventMaxStack implements Listener {
   /// @param e inventory click event
   @EventHandler(priority = EventPriority.LOWEST)
   public void onInventoryClick(InventoryClickEvent e) {
-    nextTickScheduler.accept(
-        () -> {
-          applyCustomStackSize(e.getCurrentItem());
-          applyCustomStackSize(e.getCursor());
-          fixInventory(e.getWhoClicked().getInventory());
-        });
+    nextTickScheduler.accept(() -> {
+      applyCustomStackSize(e.getCurrentItem());
+      applyCustomStackSize(e.getCursor());
+      fixInventory(e.getWhoClicked().getInventory());
+    });
   }
 
   /// Reapplies stack-size metadata after creative inventory edits change player-held items.
@@ -68,12 +71,11 @@ public class CREventMaxStack implements Listener {
   /// @param e creative inventory event
   @EventHandler(priority = EventPriority.LOWEST)
   public void onInventoryCreative(InventoryCreativeEvent e) {
-    nextTickScheduler.accept(
-        () -> {
-          applyCustomStackSize(e.getCurrentItem());
-          applyCustomStackSize(e.getCursor());
-          fixInventory(e.getWhoClicked().getInventory());
-        });
+    nextTickScheduler.accept(() -> {
+      applyCustomStackSize(e.getCurrentItem());
+      applyCustomStackSize(e.getCursor());
+      fixInventory(e.getWhoClicked().getInventory());
+    });
   }
 
   /// Reapplies stack-size metadata after inventories transfer an item stack.
@@ -113,9 +115,7 @@ public class CREventMaxStack implements Listener {
   /// @param inventory inventory to fix
   private void fixInventory(Inventory inventory) {
     if (inventory == null) return;
-    for (var item : inventory.getContents()) {
-      applyCustomStackSize(item);
-    }
+    for (var item : inventory.getContents()) applyCustomStackSize(item);
   }
 
   /// Applies stack-size metadata unless the item is a compressed resource.

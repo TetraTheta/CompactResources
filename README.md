@@ -76,11 +76,23 @@ resource-pack:
 
 `module.max-stack-size` rules are resolved in this order: exact item ID, item tag, regex, then the optional default rule. Values are clamped to the supported range `1..99`. Invalid regex rules are removed during validation, while unknown item IDs are kept with a warning so future Minecraft versions can still use them.
 
+CompactResources skips max stack-size changes for items named `cr_ignore` case-insensitively, which lets non-op players create exceptions through anvils. Players with `compactresources.ignore` can also run `/cr ignore set` while holding an item. For command-generated items, use Paper's PDC-compatible custom data form:
+
+```mcfunction
+/give @s minecraft:stone[custom_data={PublicBukkitValues:{"compactresources:ignore":1b}}]
+```
+
+When CompactResources applies a max stack size, it also writes the internal `compactresources:managed_max_stack_size` marker. That marker is not user-facing; it only lets the plugin remove or update values it owns while preserving max stack sizes created by other plugins, datapacks, or commands.
+
 `resource-pack.enabled` controls whether the plugin asks joining players to load the configured pack. `resource-pack.force` makes the request required. If `url` or `sha1` is blank, or if the URL/hash metadata is invalid, resource-pack delivery is skipped and compressed resources will still work mechanically but appear as Heart of the Sea items on clients without CompactResourcesPack.
 
 ## Commands
 
 - `/cr compact`: Compacts the executing player's inventory.
+- `/cr ignore get`: Shows whether the main-hand item is ignored and managed by CompactResources.
+- `/cr ignore set`: Marks the main-hand item as a max stack-size exception.
+- `/cr ignore unset`: Removes the command-set exception from the main-hand item.
+- `/cr ignore toggle`: Toggles the command-set exception on the main-hand item.
 - `/cr reload`: Reloads configuration from disk.
 - `/cr config language [value]`: Views or updates the active language.
 - `/cr config max-stack-size default enabled [true|false]`: Views or updates the fallback stack-size rule.
@@ -102,4 +114,5 @@ Permissions:
 
 - `compactresources.compact`: Allows `/cr compact`.
 - `compactresources.config`: Allows viewing and editing live config values.
+- `compactresources.ignore`: Allows managing max stack-size exceptions on the main-hand item.
 - `compactresources.reload`: Allows `/cr reload`.

@@ -13,7 +13,6 @@ import org.bukkit.entity.Player;
 /// Builds and executes the /cr compact subcommand.
 public class CompactCommand implements CRSubCommand {
   private static final String PERMISSION_COMPACT = "compactresources.compact";
-
   private final CompactResources plugin;
 
   /// Creates the compact subcommand.
@@ -28,24 +27,17 @@ public class CompactCommand implements CRSubCommand {
   /// @return compact subcommand builder
   @Override
   public LiteralArgumentBuilder<CommandSourceStack> getCommand() {
-    return Commands.literal("compact")
-        .requires(ctx -> ctx.getSender().hasPermission(PERMISSION_COMPACT))
-        .executes(
-            ctx -> {
-              CommandSender sender = ctx.getSource().getSender();
-              Entity executor = ctx.getSource().getExecutor();
-              if (!(executor instanceof Player player)) {
-                plugin.getRuntime().getMessageService().send(sender, "command.compact.only-player");
-                return Command.SINGLE_SUCCESS;
-              }
-
-              boolean compacted = plugin.getRuntime().getCompactService().compactInventory(player);
-              if (compacted) {
-                plugin.getRuntime().getMessageService().send(sender, "command.compact.success");
-              } else {
-                plugin.getRuntime().getMessageService().send(sender, "command.compact.empty");
-              }
-              return Command.SINGLE_SUCCESS;
-            });
+    return Commands.literal("compact").requires(ctx -> ctx.getSender().hasPermission(PERMISSION_COMPACT)).executes(ctx -> {
+      CommandSender sender = ctx.getSource().getSender();
+      Entity executor = ctx.getSource().getExecutor();
+      if (!(executor instanceof Player player)) {
+        plugin.getRuntime().getMessageService().send(sender, "command.compact.only-player");
+        return Command.SINGLE_SUCCESS;
+      }
+      boolean compacted = plugin.getRuntime().getCompactService().compactInventory(player);
+      if (compacted) plugin.getRuntime().getMessageService().send(sender, "command.compact.success");
+      else plugin.getRuntime().getMessageService().send(sender, "command.compact.empty");
+      return Command.SINGLE_SUCCESS;
+    });
   }
 }

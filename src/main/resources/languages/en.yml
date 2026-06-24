@@ -10,6 +10,12 @@ command:
     set: Changed {0} to {1} and saved the configuration.
     unset: unset
     view: '{0}: {1}'
+  ignore:
+    empty-hand: Hold an item in your main hand.
+    only-player: Only players can run this command.
+    set: Marked the main-hand item as a max stack-size exception.
+    status: 'ignored: {0}, managed by CompactResources: {1}'
+    unset: Removed the max stack-size exception from the main-hand item.
   reload:
     success: CompactResources configuration has been reloaded.
 log:
