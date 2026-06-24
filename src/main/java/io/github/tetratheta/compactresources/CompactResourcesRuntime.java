@@ -11,24 +11,22 @@ import io.github.tetratheta.compactresources.service.CompressionService;
 import io.github.tetratheta.compactresources.service.ResourcePackService;
 import io.github.tetratheta.compactresources.service.StackSizeService;
 import io.github.tetratheta.mol.message.MessageService;
-import io.github.tetratheta.mol.plugin.PluginRuntime;
+import io.github.tetratheta.mol.plugin.LocalizedPluginRuntime;
 
 /// Wires configuration-backed services and Bukkit resources for one plugin runtime.
-public class CompactResourcesRuntime extends PluginRuntime {
+public class CompactResourcesRuntime extends LocalizedPluginRuntime<CRConfig> {
   private final CompactService compactService;
   private final CompressionService compressionService;
-  private final CRConfig config;
-  private final MessageService messageService;
   private final StackSizeService stackSizeService;
 
   /// Creates all services from the current disk configuration and registers runtime listeners.
   ///
   /// @param plugin plugin entry point that owns this runtime
   public CompactResourcesRuntime(CompactResources plugin) {
-    super(plugin);
-    config = new CRConfig(plugin);
-    messageService = new MessageService(plugin, config.getLanguage());
-    if (config.validateAndFix(messageService)) config.saveConfig();
+    super(plugin, CRConfig::new, CRConfig::getLanguage);
+    CRConfig config = getConfig();
+    MessageService messageService = getMessageService();
+    saveConfigIfChanged(config.validateAndFix(messageService));
     stackSizeService = new StackSizeService(config.loadStackSizeRules(), messageService);
     compressionService = config.isCompressionEnabled() ? new CompressionService(plugin, stackSizeService) : null;
     if (compressionService != null) compressionService.registerRecipes();
@@ -48,20 +46,6 @@ public class CompactResourcesRuntime extends PluginRuntime {
   /// @return inventory compacting service
   public CompactService getCompactService() {
     return compactService;
-  }
-
-  /// Returns the active configuration facade.
-  ///
-  /// @return active configuration facade
-  public CRConfig getConfig() {
-    return config;
-  }
-
-  /// Returns the active localized message service.
-  ///
-  /// @return localized message service
-  public MessageService getMessageService() {
-    return messageService;
   }
 
   /// Returns the active stack-size service.
