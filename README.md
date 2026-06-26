@@ -13,15 +13,17 @@
 
 ## Introduction
 
-CompactResources helps players keep their inventories clean by increasing the maximum stack size of configured items and by adding reversible compressed resource items.
+CompactResources helps players keep their inventories clean by increasing the maximum stack size of configured items, adding reversible compressed resource items, and letting specific items opt out when they must keep their vanilla or externally managed stack size.
 
 Compressed resources are custom `minecraft:heart_of_the_sea` items that can visually appear as block-shaped models through the resource pack. For them to display correctly, clients need [CompactResourcesPack](https://modrinth.com/resourcepack/compactresourcespack), the companion resource pack developed primarily for this plugin. The plugin can send that pack automatically through Paper's server resource-pack system when `resource-pack.url` and `resource-pack.sha1` are configured.
 
 By default, the plugin targets items that are commonly useful but awkward to store in bulk, such as stews, potions, saddles, boats, chest boats, and minecarts. Server owners can customize stack-size rules by item ID, Minecraft item tag, regular expression, or a disabled-by-default fallback rule for every item.
 
-Players can craft supported materials into x9, x81, and x729 compressed tiers, decompress them back through crafting, or run `/cr compact` to convert eligible inventory contents automatically.
+Players can craft supported materials into x9, x81, and x729 compressed tiers, decompress them back through crafting, or run `/cr compact` to convert eligible inventory contents automatically. Supported compressed resources include common storage-heavy blocks plus selected items such as arrows, beetroot, carrots, magma cream, potatoes, and sugar cane.
 
 Use `/cr reload` after editing the configuration to apply changes without restarting the server.
+
+See [CHANGELOG.md](CHANGELOG.md) for release notes.
 
 Related projects:
 
@@ -76,7 +78,7 @@ resource-pack:
 
 `module.max-stack-size` rules are resolved in this order: exact item ID, item tag, regex, then the optional default rule. Values are clamped to the supported range `1..99`. Invalid regex rules are removed during validation, while unknown item IDs are kept with a warning so future Minecraft versions can still use them.
 
-CompactResources skips max stack-size changes for items named `cr_ignore` case-insensitively, which lets non-op players create exceptions through anvils. Players with `compactresources.ignore` can also run `/cr ignore set` while holding an item. For command-generated items, use Paper's PDC-compatible custom data form:
+CompactResources skips max stack-size changes for items named `cr_ignore` case-insensitively, which lets non-op players create exceptions through anvils. Players with `compactresources.ignore` can also run `/cr ignore set` while holding an item; that permission is granted to all players by default. For command-generated items, use Paper's PDC-compatible custom data form:
 
 ```mcfunction
 /give @s minecraft:stone[custom_data={PublicBukkitValues:{"compactresources:ignore":1b}}]
