@@ -11,11 +11,11 @@ plugins {
 }
 
 group = "io.github.tetratheta"
-version = "2.1.0"
+version = "2.1.0-26.2"
 
-def verMC = "26.1.2" // Minecraft (Modrinth, Hangar)
-def verAPI = "26.1.2" // API (dependencies & plugin.yml)
-def verPaper = "26.1.2.build.+" // Paper (Paper)
+def verMC = "26.2" // Minecraft (Modrinth, Hangar)
+def verAPI = "26.2" // API (dependencies & plugin.yml)
+def verPaper = "26.2.build.+" // Paper (Paper)
 def releaseChannel = "release" // Release Channel (Modrinth & Hangar)
 
 repositories {
