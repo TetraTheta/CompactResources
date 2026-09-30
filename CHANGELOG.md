@@ -1,4 +1,4 @@
-# v2.2.0 (Unreleased)
+# v2.2.0
 
 - Added max stack size exceptions.
   - Items named `cr_ignore` are skipped case-insensitively, so players can create exceptions through anvils.

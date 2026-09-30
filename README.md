@@ -9,8 +9,6 @@
 ![Game Version](https://img.shields.io/modrinth/game-versions/compactresources?style=for-the-badge&label=Minecraft%20Version)<br>
 [![Modrinth Downloads](https://img.shields.io/modrinth/dt/compactresources?style=for-the-badge&label=Modrinth%20Downloads)](https://modrinth.com/plugin/compactresources)
 
-[![Discord](https://img.shields.io/discord/1514516278226845726?style=for-the-badge)](https://discord.gg/eS8tCEkecp)
-
 ## Introduction
 
 CompactResources helps players keep their inventories clean by increasing the maximum stack size of configured items, adding reversible compressed resource items, and letting specific items opt out when they must keep their vanilla or externally managed stack size.
